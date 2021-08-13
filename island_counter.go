@@ -193,7 +193,6 @@ func VisitCellAndAllConnectedNeighborsParallel(columnNumber, rowNumber int, topo
 					wg.Done()
 					continue
 				}
-				// visitedMap.Visits(cell.column, cell.row)
 				go func() {
 					VisitCellAndAllConnectedNeighborsParallel(cell.column, cell.row, topography, visitedMap)
 					wg.Done()
@@ -211,8 +210,7 @@ func VisitCellAndAllConnectedNeighborsParallel(columnNumber, rowNumber int, topo
 	if (columnNumber - 1) >= 0 {
 
 		// upper left
-		if rowNumber-1 >= 0 && !visitedMap.HasVisited(columnNumber-1, rowNumber-1) {
-			// VisitCellAndAllConnectedNeighbors(columnNumber-1, rowNumber-1, topography, visitedMap)
+		if rowNumber-1 >= 0 {
 			wg.Add(1)
 			cellsToVisit <- struct {
 				column int
@@ -221,18 +219,14 @@ func VisitCellAndAllConnectedNeighborsParallel(columnNumber, rowNumber int, topo
 		}
 
 		// center left
-		if !visitedMap.HasVisited(columnNumber-1, rowNumber) {
-			// VisitCellAndAllConnectedNeighbors(columnNumber-1, rowNumber, topography, visitedMap)
-			wg.Add(1)
-			cellsToVisit <- struct {
-				column int
-				row    int
-			}{columnNumber - 1, rowNumber}
-		}
+		wg.Add(1)
+		cellsToVisit <- struct {
+			column int
+			row    int
+		}{columnNumber - 1, rowNumber}
 
 		// bottom left
-		if rowNumber+1 <= maxDist && !visitedMap.HasVisited(columnNumber-1, rowNumber+1) {
-			// VisitCellAndAllConnectedNeighbors(columnNumber-1, rowNumber+1, topography, visitedMap)
+		if rowNumber+1 <= maxDist {
 			wg.Add(1)
 			cellsToVisit <- struct {
 				column int
@@ -244,8 +238,7 @@ func VisitCellAndAllConnectedNeighborsParallel(columnNumber, rowNumber int, topo
 	// same column
 
 	// above
-	if rowNumber-1 >= 0 && !visitedMap.HasVisited(columnNumber, rowNumber-1) {
-		// VisitCellAndAllConnectedNeighbors(columnNumber, rowNumber-1, topography, visitedMap)
+	if rowNumber-1 >= 0 {
 		wg.Add(1)
 		cellsToVisit <- struct {
 			column int
@@ -254,8 +247,7 @@ func VisitCellAndAllConnectedNeighborsParallel(columnNumber, rowNumber int, topo
 	}
 
 	// below
-	if rowNumber+1 <= maxDist && !visitedMap.HasVisited(columnNumber, rowNumber+1) {
-		// VisitCellAndAllConnectedNeighbors(columnNumber, rowNumber+1, topography, visitedMap)
+	if rowNumber+1 <= maxDist {
 		wg.Add(1)
 		cellsToVisit <- struct {
 			column int
@@ -267,8 +259,7 @@ func VisitCellAndAllConnectedNeighborsParallel(columnNumber, rowNumber int, topo
 	if (columnNumber + 1) <= maxDist {
 
 		// upper right
-		if rowNumber-1 >= 0 && !visitedMap.HasVisited(columnNumber+1, rowNumber-1) {
-			// VisitCellAndAllConnectedNeighbors(columnNumber+1, rowNumber-1, topography, visitedMap)
+		if rowNumber-1 >= 0 {
 			wg.Add(1)
 			cellsToVisit <- struct {
 				column int
@@ -277,18 +268,14 @@ func VisitCellAndAllConnectedNeighborsParallel(columnNumber, rowNumber int, topo
 		}
 
 		// center right
-		if !visitedMap.HasVisited(columnNumber+1, rowNumber) {
-			// VisitCellAndAllConnectedNeighbors(columnNumber+1, rowNumber, topography, visitedMap)
-			wg.Add(1)
-			cellsToVisit <- struct {
-				column int
-				row    int
-			}{columnNumber + 1, rowNumber}
-		}
+		wg.Add(1)
+		cellsToVisit <- struct {
+			column int
+			row    int
+		}{columnNumber + 1, rowNumber}
 
 		// bottom right
-		if rowNumber+1 <= maxDist && !visitedMap.HasVisited(columnNumber+1, rowNumber+1) {
-			// VisitCellAndAllConnectedNeighbors(columnNumber+1, rowNumber+1, topography, visitedMap)
+		if rowNumber+1 <= maxDist {
 			wg.Add(1)
 			cellsToVisit <- struct {
 				column int
