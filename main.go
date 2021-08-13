@@ -99,7 +99,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		// is not 0 then set the previous step location equal to something else
 		if m.step != 0 {
 			previousStepLocation := m.routetaken[m.step-1]
-			valueToSet := "O"
+			valueToSet := "#"
 			if topo[previousStepLocation.Row][previousStepLocation.Column] == 0 {
 				valueToSet = "_"
 			}
