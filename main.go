@@ -39,7 +39,7 @@ var topo = [][]int{
 // }
 
 func main() {
-	islands, routetaken, err := IslandCounter(topo, true)
+	islands, routetaken, err := IslandCounter(topo, false)
 	if err != nil {
 		log.Fatalf("[ERROR] could not count islands: %v", err)
 	}
