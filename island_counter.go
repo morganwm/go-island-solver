@@ -117,7 +117,7 @@ func VisitCellAndAllConnectedNeighbors(columnNumber, rowNumber int, topography [
 func VisitCellAndAllConnectedNeighborsParallel(columnNumber, rowNumber int, topography [][]int, visitedMap *LockableMatrix) {
 
 	// mark it as visited
-	visitedMap.Visits(columnNumber, rowNumber)
+	visitedMap.VisitsSafe(columnNumber, rowNumber)
 
 	// if water then skip
 	if topography[rowNumber][columnNumber] == 0 {
@@ -139,7 +139,7 @@ func VisitCellAndAllConnectedNeighborsParallel(columnNumber, rowNumber int, topo
 			select {
 
 			case cell := <-cellsToVisit:
-				if visitedMap.HasVisited(cell.column, cell.row) {
+				if visitedMap.HasVisitedSafe(cell.column, cell.row) {
 					wg.Done()
 					continue
 				}

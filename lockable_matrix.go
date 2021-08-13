@@ -23,9 +23,14 @@ func NewLockableMatrix(size int) LockableMatrix {
 	}
 }
 
-func (l *LockableMatrix) HasVisited(column, row int) bool {
+func (l *LockableMatrix) HasVisitedSafe(column, row int) bool {
 	l.mu.RLock()
 	defer l.mu.RUnlock()
+
+	return l.HasVisited(column, row)
+}
+
+func (l *LockableMatrix) HasVisited(column, row int) bool {
 
 	cellToCheck := (row * l.size) + column
 	if cellToCheck >= len(l.visitedMap) {
@@ -35,9 +40,14 @@ func (l *LockableMatrix) HasVisited(column, row int) bool {
 	return l.visitedMap[cellToCheck]
 }
 
-func (l *LockableMatrix) Visits(column, row int) {
+func (l *LockableMatrix) VisitsSafe(column, row int) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
+
+	l.Visits(column, row)
+}
+
+func (l *LockableMatrix) Visits(column, row int) {
 
 	l.visitedList = append(l.visitedList, struct {
 		Column int
