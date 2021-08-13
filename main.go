@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -17,28 +18,11 @@ var topo = [][]int{
 	{1, 0, 1, 0, 1},
 }
 
-// func not_main() {
-// 	log.Printf("[DEBUG] Started")
-
-// 	topo := [][]int{
-// 		{1, 1, 0, 0, 0},
-// 		{0, 1, 0, 0, 1},
-// 		{1, 0, 0, 1, 1},
-// 		{0, 0, 0, 0, 0},
-// 		{1, 0, 1, 0, 1},
-// 	}
-
-// 	islands, routetaken, err := IslandCounter(topo)
-// 	if err != nil {
-// 		log.Fatalf("[ERROR] could not count islands: %v", err)
-// 	}
-
-// 	log.Printf("[DEBUG] found %d islands", islands)
-
-// 	log.Printf("[DEBUG] Done")
-// }
-
 func main() {
+
+	basicOutPut := flag.Bool("basic-output", false, "if set to true the UI will only display out the output of the run and not the UI animation, best for use with non-tty shells")
+	flag.Parse()
+
 	islands, routetaken, err := IslandCounter(topo, false)
 	if err != nil {
 		log.Fatalf("[ERROR] could not count islands: %v", err)
@@ -46,25 +30,27 @@ func main() {
 
 	log.Printf("Found %d Islands traversing %d/%d surfaces", islands, len(routetaken), len(topo)*len(topo))
 
-	displayMap := make([][]string, len(topo))
-	for i := range displayMap {
-		var row []string
-		for _, surfaceTexture := range topo[i] {
-			row = append(row, fmt.Sprintf("%d", surfaceTexture))
+	if !*basicOutPut {
+		displayMap := make([][]string, len(topo))
+		for i := range displayMap {
+			var row []string
+			for _, surfaceTexture := range topo[i] {
+				row = append(row, fmt.Sprintf("%d", surfaceTexture))
+			}
+
+			displayMap[i] = row
 		}
 
-		displayMap[i] = row
-	}
-
-	p := tea.NewProgram(model{
-		displayableMap: displayMap,
-		topography:     topo,
-		routetaken:     routetaken,
-		step:           0,
-	})
-	if err := p.Start(); err != nil {
-		log.Printf("Alas, there's been an error: %v", err)
-		os.Exit(1)
+		p := tea.NewProgram(model{
+			displayableMap: displayMap,
+			topography:     topo,
+			routetaken:     routetaken,
+			step:           0,
+		})
+		if err := p.Start(); err != nil {
+			log.Printf("Alas, there's been an error: %v", err)
+			os.Exit(1)
+		}
 	}
 
 }
