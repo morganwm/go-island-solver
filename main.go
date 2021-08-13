@@ -39,11 +39,12 @@ var topo = [][]int{
 // }
 
 func main() {
-	islands, routetaken, err := IslandCounter(topo)
+	islands, routetaken, err := IslandCounter(topo, true)
 	if err != nil {
 		log.Fatalf("[ERROR] could not count islands: %v", err)
 	}
-	log.Printf("Found %d Islands", islands)
+
+	log.Printf("Found %d Islands traversing %d/%d surfaces", islands, len(routetaken), len(topo)*len(topo))
 
 	displayMap := make([][]string, len(topo))
 	for i := range displayMap {

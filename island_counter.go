@@ -55,7 +55,7 @@ func (l *LockableMatrix) Visits(column, row int) {
 	l.visitedMap[cellToSet] = true
 }
 
-func IslandCounter(topography [][]int) (int, []struct {
+func IslandCounter(topography [][]int, parallel bool) (int, []struct {
 	Column int
 	Row    int
 }, error) {
@@ -86,7 +86,11 @@ func IslandCounter(topography [][]int) (int, []struct {
 			}
 
 			// if land then we recursively check all neighbors
-			VisitCellAndAllConnectedNeighbors(columnNumber, rowNumber, topography, &visitedMap)
+			if parallel {
+				VisitCellAndAllConnectedNeighborsParallel(columnNumber, rowNumber, topography, &visitedMap)
+			} else {
+				VisitCellAndAllConnectedNeighbors(columnNumber, rowNumber, topography, &visitedMap)
+			}
 
 			islandCounter++
 		}
@@ -158,4 +162,142 @@ func VisitCellAndAllConnectedNeighbors(columnNumber, rowNumber int, topography [
 			VisitCellAndAllConnectedNeighbors(columnNumber+1, rowNumber+1, topography, visitedMap)
 		}
 	}
+}
+
+func VisitCellAndAllConnectedNeighborsParallel(columnNumber, rowNumber int, topography [][]int, visitedMap *LockableMatrix) {
+
+	// mark it as visited
+	visitedMap.Visits(columnNumber, rowNumber)
+
+	// if water then skip
+	if topography[rowNumber][columnNumber] == 0 {
+		return
+	}
+
+	maxDist := len(topography) - 1
+
+	cellsToVisit := make(chan struct {
+		column int
+		row    int
+	})
+	done := make(chan bool)
+
+	var wg sync.WaitGroup
+
+	go func() {
+		for {
+			select {
+
+			case cell := <-cellsToVisit:
+				if visitedMap.HasVisited(cell.column, cell.row) {
+					wg.Done()
+					continue
+				}
+				// visitedMap.Visits(cell.column, cell.row)
+				go func() {
+					VisitCellAndAllConnectedNeighborsParallel(cell.column, cell.row, topography, visitedMap)
+					wg.Done()
+				}()
+
+			case <-done:
+				return
+			}
+		}
+	}()
+
+	// check all adjoining squares
+
+	// column to the left
+	if (columnNumber - 1) >= 0 {
+
+		// upper left
+		if rowNumber-1 >= 0 && !visitedMap.HasVisited(columnNumber-1, rowNumber-1) {
+			// VisitCellAndAllConnectedNeighbors(columnNumber-1, rowNumber-1, topography, visitedMap)
+			wg.Add(1)
+			cellsToVisit <- struct {
+				column int
+				row    int
+			}{columnNumber - 1, rowNumber - 1}
+		}
+
+		// center left
+		if !visitedMap.HasVisited(columnNumber-1, rowNumber) {
+			// VisitCellAndAllConnectedNeighbors(columnNumber-1, rowNumber, topography, visitedMap)
+			wg.Add(1)
+			cellsToVisit <- struct {
+				column int
+				row    int
+			}{columnNumber - 1, rowNumber}
+		}
+
+		// bottom left
+		if rowNumber+1 <= maxDist && !visitedMap.HasVisited(columnNumber-1, rowNumber+1) {
+			// VisitCellAndAllConnectedNeighbors(columnNumber-1, rowNumber+1, topography, visitedMap)
+			wg.Add(1)
+			cellsToVisit <- struct {
+				column int
+				row    int
+			}{columnNumber - 1, rowNumber + 1}
+		}
+	}
+
+	// same column
+
+	// above
+	if rowNumber-1 >= 0 && !visitedMap.HasVisited(columnNumber, rowNumber-1) {
+		// VisitCellAndAllConnectedNeighbors(columnNumber, rowNumber-1, topography, visitedMap)
+		wg.Add(1)
+		cellsToVisit <- struct {
+			column int
+			row    int
+		}{columnNumber, rowNumber - 1}
+	}
+
+	// below
+	if rowNumber+1 <= maxDist && !visitedMap.HasVisited(columnNumber, rowNumber+1) {
+		// VisitCellAndAllConnectedNeighbors(columnNumber, rowNumber+1, topography, visitedMap)
+		wg.Add(1)
+		cellsToVisit <- struct {
+			column int
+			row    int
+		}{columnNumber, rowNumber + 1}
+	}
+
+	// column to the right
+	if (columnNumber + 1) <= maxDist {
+
+		// upper right
+		if rowNumber-1 >= 0 && !visitedMap.HasVisited(columnNumber+1, rowNumber-1) {
+			// VisitCellAndAllConnectedNeighbors(columnNumber+1, rowNumber-1, topography, visitedMap)
+			wg.Add(1)
+			cellsToVisit <- struct {
+				column int
+				row    int
+			}{columnNumber + 1, rowNumber - 1}
+		}
+
+		// center right
+		if !visitedMap.HasVisited(columnNumber+1, rowNumber) {
+			// VisitCellAndAllConnectedNeighbors(columnNumber+1, rowNumber, topography, visitedMap)
+			wg.Add(1)
+			cellsToVisit <- struct {
+				column int
+				row    int
+			}{columnNumber + 1, rowNumber}
+		}
+
+		// bottom right
+		if rowNumber+1 <= maxDist && !visitedMap.HasVisited(columnNumber+1, rowNumber+1) {
+			// VisitCellAndAllConnectedNeighbors(columnNumber+1, rowNumber+1, topography, visitedMap)
+			wg.Add(1)
+			cellsToVisit <- struct {
+				column int
+				row    int
+			}{columnNumber + 1, rowNumber + 1}
+		}
+	}
+
+	wg.Wait()
+	done <- true
+
 }
