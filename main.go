@@ -20,15 +20,18 @@ var topo = [][]int{
 
 func main() {
 
-	basicOutPut := flag.Bool("basic-output", false, "if set to true the UI will only display out the output of the run and not the UI animation, best for use with non-tty shells")
+	basicOutPut := flag.Bool("basic-output", false, "if set the UI will only display out the output of the run and not the UI animation, best for use with non-tty shells")
+	parallelFlag := flag.Bool("parallel", false, "if set the program will run in parallel mode")
 	flag.Parse()
 
-	islands, routetaken, err := IslandCounter(topo, false)
+	started := time.Now()
+	islands, routetaken, err := IslandCounter(topo, *parallelFlag)
+	timeTaken := time.Since(started)
 	if err != nil {
 		log.Fatalf("[ERROR] could not count islands: %v", err)
 	}
 
-	log.Printf("Found %d Islands traversing %d/%d surfaces", islands, len(routetaken), len(topo)*len(topo))
+	log.Printf("Found %d Islands traversing %d/%d surfaces, took %s", islands, len(routetaken), len(topo)*len(topo), timeTaken)
 
 	if !*basicOutPut {
 		displayMap := make([][]string, len(topo))
