@@ -15,3 +15,8 @@
 # vendor/
 
 island_counter
+
+out/*
+!out/readme.md
+
+go-island-solver
