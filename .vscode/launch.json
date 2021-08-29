@@ -31,14 +31,14 @@
             "request": "launch",
             "mode": "auto",
             "program": "${workspaceFolder}",
-            "args": ["-parallel"]
         },
         {
             "name": "Run Parallel With UI",
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${workspaceFolder}"
+            "program": "${workspaceFolder}",
+            "args": ["-parallel"],
         },
         {
             "name": "Run",
