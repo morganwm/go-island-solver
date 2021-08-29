@@ -5,6 +5,27 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Tests",
+            "type": "go",
+            "request": "launch",
+            "mode": "test",
+            "program": "${workspaceFolder}",
+            "args": [
+                "-test.v",
+            ]
+        },
+        {
+            "name": "Benchmarks",
+            "type": "go",
+            "request": "launch",
+            "mode": "test",
+            "program": "${workspaceFolder}",
+            "args": [
+                "-test.benchmem",
+                "-test.bench=^(Benchmark).*$",
+            ]
+        },
+        {
             "name": "Run With UI",
             "type": "go",
             "request": "launch",
