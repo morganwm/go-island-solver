@@ -8,12 +8,14 @@ type args struct {
 	topography [][]int
 }
 
-var tests = []struct {
+type test struct {
 	name    string
 	args    args
 	want    int
 	wantErr bool
-}{
+}
+
+var tests = []test{
 	{
 		name: "Matts Test",
 		args: args{topography: [][]int{
@@ -60,34 +62,38 @@ func TestIslandCounterParallel(t *testing.T) {
 	}
 }
 
-func BenchmarkIslandCounter(b *testing.B) {
-
-	testToBenchmark := tests[0]
+func runBenchmarkIslandCounter(t test, b *testing.B) {
 
 	for i := 0; i < b.N; i++ {
-		got, _, err := IslandCounter(testToBenchmark.args.topography, false)
-		if (err != nil) != testToBenchmark.wantErr {
-			b.Errorf("IslandCounter() error = %v, wantErr %v", err, testToBenchmark.wantErr)
+		got, _, err := IslandCounter(t.args.topography, false)
+		if (err != nil) != t.wantErr {
+			b.Errorf("IslandCounter() error = %v, wantErr %v", err, t.wantErr)
 			return
 		}
-		if got != testToBenchmark.want {
-			b.Errorf("IslandCounter() got = %v, want %v", got, testToBenchmark.want)
+		if got != t.want {
+			b.Errorf("IslandCounter() got = %v, want %v", got, t.want)
 		}
 	}
 }
 
-func BenchmarkIslandCounterParallel(b *testing.B) {
-
-	testToBenchmark := tests[0]
+func runBenchmarkIslandCounterParallel(t test, b *testing.B) {
 
 	for i := 0; i < b.N; i++ {
-		got, _, err := IslandCounter(testToBenchmark.args.topography, true)
-		if (err != nil) != testToBenchmark.wantErr {
-			b.Errorf("IslandCounter() error = %v, wantErr %v", err, testToBenchmark.wantErr)
+		got, _, err := IslandCounter(t.args.topography, true)
+		if (err != nil) != t.wantErr {
+			b.Errorf("IslandCounter() error = %v, wantErr %v", err, t.wantErr)
 			return
 		}
-		if got != testToBenchmark.want {
-			b.Errorf("IslandCounter() got = %v, want %v", got, testToBenchmark.want)
+		if got != t.want {
+			b.Errorf("IslandCounter() got = %v, want %v", got, t.want)
 		}
 	}
+}
+
+func BenchmarkIslandCounterTest1(b *testing.B) {
+	runBenchmarkIslandCounter(tests[0], b)
+}
+
+func BenchmarkIslandCounterParallelTest1(b *testing.B) {
+	runBenchmarkIslandCounterParallel(tests[0], b)
 }
