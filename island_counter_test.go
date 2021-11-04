@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -26,6 +27,19 @@ var tests = []test{
 			{1, 0, 1, 0, 1},
 		}},
 		want:    5,
+		wantErr: false,
+	},
+	{
+		// https://dev.to/rattanakchea/amazons-interview-question-count-island-21h6
+		name: "Online",
+		args: args{topography: [][]int{
+			{0, 1, 0, 1, 0},
+			{0, 0, 1, 1, 1},
+			{1, 0, 0, 1, 0},
+			{0, 1, 1, 0, 0},
+			{1, 0, 1, 0, 1},
+		}},
+		want:    2,
 		wantErr: false,
 	},
 }
@@ -90,10 +104,18 @@ func runBenchmarkIslandCounterParallel(t test, b *testing.B) {
 	}
 }
 
-func BenchmarkIslandCounterTest1(b *testing.B) {
-	runBenchmarkIslandCounter(tests[0], b)
+func BenchmarkIslandCounter(b *testing.B) {
+	for i, t := range tests {
+		b.Run(fmt.Sprintf("Test[%d]=%s", i, t.name), func(bb *testing.B) {
+			runBenchmarkIslandCounter(tests[i], bb)
+		})
+	}
 }
 
-func BenchmarkIslandCounterParallelTest1(b *testing.B) {
-	runBenchmarkIslandCounterParallel(tests[0], b)
+func BenchmarkIslandCounterP(b *testing.B) {
+	for i, t := range tests {
+		b.Run(fmt.Sprintf("Test[%d]=%s", i, t.name), func(bb *testing.B) {
+			runBenchmarkIslandCounterParallel(tests[i], bb)
+		})
+	}
 }
