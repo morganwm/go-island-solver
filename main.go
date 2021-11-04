@@ -22,10 +22,11 @@ func main() {
 
 	basicOutPut := flag.Bool("basic-output", false, "if set the UI will only display out the output of the run and not the UI animation, best for use with non-tty shells")
 	parallelFlag := flag.Bool("parallel", false, "if set the program will run in parallel mode")
+	breakOnDiagonal := flag.Bool("brak-on-diagonal", false, "if the flag is set the program will run as if diagonal landmasses are not contiguous")
 	flag.Parse()
 
 	started := time.Now()
-	islands, routetaken, err := IslandCounter(topo, *parallelFlag)
+	islands, routetaken, err := IslandCounter(topo, *parallelFlag, *breakOnDiagonal)
 	timeTaken := time.Since(started)
 	if err != nil {
 		log.Fatalf("[ERROR] could not count islands: %v", err)
