@@ -1,12 +1,12 @@
 package main
 
 import (
-	"fmt"
 	"testing"
 )
 
 type args struct {
-	topography [][]int
+	topography      [][]int
+	breakOnDiagonal bool
 }
 
 type test struct {
@@ -19,27 +19,65 @@ type test struct {
 var tests = []test{
 	{
 		name: "Matts Test",
-		args: args{topography: [][]int{
-			{1, 1, 0, 0, 0},
-			{0, 1, 0, 0, 1},
-			{1, 0, 0, 1, 1},
-			{0, 0, 0, 0, 0},
-			{1, 0, 1, 0, 1},
-		}},
+		args: args{
+			topography: [][]int{
+				{1, 1, 0, 0, 0},
+				{0, 1, 0, 0, 1},
+				{1, 0, 0, 1, 1},
+				{0, 0, 0, 0, 0},
+				{1, 0, 1, 0, 1},
+			},
+			breakOnDiagonal: false,
+		},
 		want:    5,
 		wantErr: false,
 	},
 	{
 		// https://dev.to/rattanakchea/amazons-interview-question-count-island-21h6
-		name: "Online",
-		args: args{topography: [][]int{
-			{0, 1, 0, 1, 0},
-			{0, 0, 1, 1, 1},
-			{1, 0, 0, 1, 0},
-			{0, 1, 1, 0, 0},
-			{1, 0, 1, 0, 1},
-		}},
+		name: "Online (dev)",
+		args: args{
+			topography: [][]int{
+				{0, 1, 0, 1, 0},
+				{0, 0, 1, 1, 1},
+				{1, 0, 0, 1, 0},
+				{0, 1, 1, 0, 0},
+				{1, 0, 1, 0, 1},
+			},
+			breakOnDiagonal: true,
+		},
+		want:    6,
+		wantErr: false,
+	},
+	{
+		// https://dev.to/rattanakchea/amazons-interview-question-count-island-21h6
+		name: "Online (dev-Mod)",
+		args: args{
+			topography: [][]int{
+				{0, 1, 0, 1, 0},
+				{0, 0, 1, 1, 1},
+				{1, 0, 0, 1, 0},
+				{0, 1, 1, 0, 0},
+				{1, 0, 1, 0, 1},
+			},
+			breakOnDiagonal: false,
+		},
 		want:    2,
+		wantErr: false,
+	},
+	{
+		// https://medium.com/@obiwankenoobi/interview-question-7-find-the-number-of-islands-1216eff9ede9
+		name: "Online (medium)",
+		args: args{
+			topography: [][]int{
+				{1, 0, 0, 0, 0},
+				{0, 0, 1, 1, 0},
+				{0, 1, 1, 0, 0},
+				{1, 1, 0, 0, 1},
+				{1, 1, 0, 0, 1},
+			},
+			breakOnDiagonal: false,
+		},
+		want:    3,
 		wantErr: false,
 	},
 }
@@ -48,7 +86,7 @@ func TestIslandCounter(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, _, err := IslandCounter(tt.args.topography, false)
+			got, _, err := IslandCounter(tt.args.topography, false, tt.args.breakOnDiagonal)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("IslandCounter() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -64,7 +102,7 @@ func TestIslandCounterParallel(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, _, err := IslandCounter(tt.args.topography, true)
+			got, _, err := IslandCounter(tt.args.topography, true, tt.args.breakOnDiagonal)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("IslandCounter() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -79,7 +117,7 @@ func TestIslandCounterParallel(t *testing.T) {
 func runBenchmarkIslandCounter(t test, b *testing.B) {
 
 	for i := 0; i < b.N; i++ {
-		got, _, err := IslandCounter(t.args.topography, false)
+		got, _, err := IslandCounter(t.args.topography, false, t.args.breakOnDiagonal)
 		if (err != nil) != t.wantErr {
 			b.Errorf("IslandCounter() error = %v, wantErr %v", err, t.wantErr)
 			return
@@ -93,7 +131,7 @@ func runBenchmarkIslandCounter(t test, b *testing.B) {
 func runBenchmarkIslandCounterParallel(t test, b *testing.B) {
 
 	for i := 0; i < b.N; i++ {
-		got, _, err := IslandCounter(t.args.topography, true)
+		got, _, err := IslandCounter(t.args.topography, true, t.args.breakOnDiagonal)
 		if (err != nil) != t.wantErr {
 			b.Errorf("IslandCounter() error = %v, wantErr %v", err, t.wantErr)
 			return
@@ -105,17 +143,17 @@ func runBenchmarkIslandCounterParallel(t test, b *testing.B) {
 }
 
 func BenchmarkIslandCounter(b *testing.B) {
-	for i, t := range tests {
-		b.Run(fmt.Sprintf("Test[%d]=%s", i, t.name), func(bb *testing.B) {
-			runBenchmarkIslandCounter(tests[i], bb)
+	for _, t := range tests {
+		b.Run(t.name, func(bb *testing.B) {
+			runBenchmarkIslandCounter(t, bb)
 		})
 	}
 }
 
 func BenchmarkIslandCounterP(b *testing.B) {
-	for i, t := range tests {
-		b.Run(fmt.Sprintf("Test[%d]=%s", i, t.name), func(bb *testing.B) {
-			runBenchmarkIslandCounterParallel(tests[i], bb)
+	for _, t := range tests {
+		b.Run(t.name, func(bb *testing.B) {
+			runBenchmarkIslandCounterParallel(t, bb)
 		})
 	}
 }
