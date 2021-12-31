@@ -19,7 +19,8 @@
             "windows": {
                 "command": "$env:GOOS='${input:OS}'; $env:GOARCH='${input:ARCH}'; $extension = ('${input:OS}' -eq 'windows') ? '.exe' : ''; go build -o ./out/go-island-solver_${input:OS}_${input:ARCH}$extension; Remove-Item Env:GOOS; Remove-Item Env:GOARCH;",
                 "problemMatcher": [],
-            }
+            },
+            "command": "EXTENSION=\"\" && if [ ${input:OS} = windows ]; then EXTENSION=\".exe\"; fi && GOOS=${input:OS} && GOARCH=${input:ARCH} && go build -o ./out/go-island-solver_${input:OS}_${input:ARCH}$EXTENSION"
         }
     ],
     "inputs": [
