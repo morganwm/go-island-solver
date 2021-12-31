@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"runtime/debug"
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
@@ -18,12 +19,34 @@ var topo = [][]int{
 	{1, 0, 1, 0, 1},
 }
 
+// Version can be set at link time to override debug.BuildInfo.Main.Version,
+// which is "(devel)" when building from within the module. See
+// golang.org/issue/29814 and golang.org/issue/29228.
+var Version string
+
 func main() {
 
-	basicOutPut := flag.Bool("basic-output", false, "if set the UI will only display out the output of the run and not the UI animation, best for use with non-tty shells")
-	parallelFlag := flag.Bool("parallel", false, "if set the program will run in parallel mode")
-	breakOnDiagonal := flag.Bool("brak-on-diagonal", false, "if the flag is set the program will run as if diagonal landmasses are not contiguous")
+	var (
+		basicOutPut     = flag.Bool("basic-output", false, "if set the UI will only display out the output of the run and not the UI animation, best for use with non-tty shells")
+		parallelFlag    = flag.Bool("parallel", false, "if set the program will run in parallel mode")
+		breakOnDiagonal = flag.Bool("brak-on-diagonal", false, "if the flag is set the program will run as if diagonal landmasses are not contiguous")
+		versionFlag     = flag.Bool("version", false, "")
+	)
+
 	flag.Parse()
+
+	if *versionFlag {
+		if Version != "" {
+			fmt.Println(Version)
+			return
+		}
+		if buildInfo, ok := debug.ReadBuildInfo(); ok {
+			fmt.Println(buildInfo.Main.Version)
+			return
+		}
+		fmt.Println("(unknown)")
+		return
+	}
 
 	started := time.Now()
 	islands, routetaken, err := IslandCounter(topo, *parallelFlag, *breakOnDiagonal)
