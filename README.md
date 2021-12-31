@@ -1,6 +1,6 @@
 # go-island-solver
 
-[![Go](https://github.com/morganwm/go-island-solver/actions/workflows/go.yml/badge.svg)](https://github.com/morganwm/go-island-solver/actions/workflows/go.yml)
+[![Test](https://github.com/morganwm/go-island-solver/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/morganwm/go-island-solver/actions/workflows/test.yml)
 
 [![Upload Release Asset](https://github.com/morganwm/go-island-solver/actions/workflows/release.yml/badge.svg?branch=main)](https://github.com/morganwm/go-island-solver/actions/workflows/release.yml)
 
