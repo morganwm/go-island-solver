@@ -17,12 +17,25 @@ jobs:
         run: |
           VERSION="$(git describe --tags)"
           function build_solver() {
-            go build -o "go-island-solver-$(git describe --tags)-$GOOS-$GOARCH" -ldflags "-X main.Version=$(git describe --tags)"
+            DIR="$(mktemp -d)"
+            mkdir "$DIR/go-island-solver"
+            NAME="go-island-solver"
+            if [ "$GOOS" == "windows" ]; then
+              NAME=$NAME.exe
+            fi
+            go build -o $DIR/go-island-solver/$NAME -ldflags "-X main.Version=$(git describe --tags)"
+            if [ "$GOOS" == "windows" ]; then
+              ( cd "$DIR"; zip go-island-solver.zip -r go-island-solver )
+              mv "$DIR/go-island-solver.zip" "go-island-solver-$VERSION-$GOOS-$GOARCH.zip"
+            else
+              tar -cvzf "go-island-solver-$VERSION-$GOOS-$GOARCH.tar.gz" -C "$DIR" go-island-solver
+            fi
           }
           CGO_ENABLED=0 GOOS=linux GOARCH=amd64 build_solver
           CGO_ENABLED=0 GOOS=linux GOARCH=arm GOARM=6 build_solver
           CGO_ENABLED=0 GOOS=linux GOARCH=arm64 build_solver
           CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 build_solver
+          GOOS=darwin GOARCH=arm64 build_solver
           CGO_ENABLED=0 GOOS=windows GOARCH=amd64 build_solver
       - name: Upload release artifacts
         uses: actions/github-script@v3
