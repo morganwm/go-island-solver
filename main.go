@@ -57,27 +57,31 @@ func main() {
 
 	log.Printf("Found %d Islands traversing %d/%d surfaces, took %s", islands, len(routetaken), len(topo)*len(topo), timeTaken)
 
-	if !*basicOutPut {
-		displayMap := make([][]string, len(topo))
-		for i := range displayMap {
-			var row []string
-			for _, surfaceTexture := range topo[i] {
-				row = append(row, fmt.Sprintf("%d", surfaceTexture))
-			}
+	// break early for basic-output
+	if *basicOutPut {
+		return
+	}
 
-			displayMap[i] = row
+	// display our fancy UI
+	displayMap := make([][]string, len(topo))
+	for i := range displayMap {
+		var row []string
+		for _, surfaceTexture := range topo[i] {
+			row = append(row, fmt.Sprintf("%d", surfaceTexture))
 		}
 
-		p := tea.NewProgram(model{
-			displayableMap: displayMap,
-			topography:     topo,
-			routetaken:     routetaken,
-			step:           0,
-		})
-		if err := p.Start(); err != nil {
-			log.Printf("Alas, there's been an error: %v", err)
-			os.Exit(1)
-		}
+		displayMap[i] = row
+	}
+
+	p := tea.NewProgram(model{
+		displayableMap: displayMap,
+		topography:     topo,
+		routetaken:     routetaken,
+		step:           0,
+	})
+	if err := p.Start(); err != nil {
+		log.Printf("Alas, there's been an error: %v", err)
+		os.Exit(1)
 	}
 
 }
