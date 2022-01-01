@@ -120,18 +120,18 @@ func TestIslandCounter(t *testing.T) {
 }
 
 func BenchmarkIslandCounter(b *testing.B) {
-	for _, t := range tests {
+	for _, testcase := range tests {
 
-		b.Run(t.name, func(bb *testing.B) {
+		b.Run(testcase.name, func(bb *testing.B) {
 
 			// non-parallel
 			bb.Run("S", func(bbb *testing.B) {
-				runBenchmarkIslandCounter(t, false, bbb)
+				runBenchmarkIslandCounter(testcase, false, bbb)
 			})
 
 			// parallel
 			bb.Run("P", func(bbb *testing.B) {
-				runBenchmarkIslandCounter(t, true, bbb)
+				runBenchmarkIslandCounter(testcase, true, bbb)
 			})
 
 		})
