@@ -93,6 +93,12 @@ func runIslandCounterTest(tt test, p bool, t testing.TB) {
 	}
 }
 
+func runBenchmarkIslandCounter(t test, p bool, b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		runIslandCounterTest(t, p, b)
+	}
+}
+
 func TestIslandCounter(t *testing.T) {
 
 	for _, testcase := range tests {
@@ -110,12 +116,6 @@ func TestIslandCounter(t *testing.T) {
 
 		})
 
-	}
-}
-
-func runBenchmarkIslandCounter(t test, p bool, b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		runIslandCounterTest(t, p, b)
 	}
 }
 
