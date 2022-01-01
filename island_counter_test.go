@@ -82,8 +82,8 @@ var tests = []test{
 	},
 }
 
-func runIslandCounterTest(tt test, p bool, t *testing.T) {
-	got, _, err := IslandCounter(tt.args.topography, false, tt.args.breakOnDiagonal)
+func runIslandCounterTest(tt test, p bool, t testing.TB) {
+	got, _, err := IslandCounter(tt.args.topography, p, tt.args.breakOnDiagonal)
 	if (err != nil) != tt.wantErr {
 		t.Errorf("IslandCounter() error = %v, wantErr %v", err, tt.wantErr)
 		return
@@ -114,16 +114,8 @@ func TestIslandCounter(t *testing.T) {
 }
 
 func runBenchmarkIslandCounter(t test, p bool, b *testing.B) {
-
 	for i := 0; i < b.N; i++ {
-		got, _, err := IslandCounter(t.args.topography, p, t.args.breakOnDiagonal)
-		if (err != nil) != t.wantErr {
-			b.Errorf("IslandCounter() error = %v, wantErr %v", err, t.wantErr)
-			return
-		}
-		if got != t.want {
-			b.Errorf("IslandCounter() got = %v, want %v", got, t.want)
-		}
+		runIslandCounterTest(t, p, b)
 	}
 }
 
