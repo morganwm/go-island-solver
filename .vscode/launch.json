@@ -55,6 +55,14 @@
             "mode": "auto",
             "program": "${workspaceFolder}",
             "args": ["-basic-output", "-parallel"]
-        }
+        },
+        {
+            "name": "Version",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}",
+            "args": ["-version"]
+        },
     ]
 }
