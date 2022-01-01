@@ -114,24 +114,10 @@ func TestIslandCounterParallel(t *testing.T) {
 	}
 }
 
-func runBenchmarkIslandCounter(t test, b *testing.B) {
+func runBenchmarkIslandCounter(t test, p bool, b *testing.B) {
 
 	for i := 0; i < b.N; i++ {
-		got, _, err := IslandCounter(t.args.topography, false, t.args.breakOnDiagonal)
-		if (err != nil) != t.wantErr {
-			b.Errorf("IslandCounter() error = %v, wantErr %v", err, t.wantErr)
-			return
-		}
-		if got != t.want {
-			b.Errorf("IslandCounter() got = %v, want %v", got, t.want)
-		}
-	}
-}
-
-func runBenchmarkIslandCounterParallel(t test, b *testing.B) {
-
-	for i := 0; i < b.N; i++ {
-		got, _, err := IslandCounter(t.args.topography, true, t.args.breakOnDiagonal)
+		got, _, err := IslandCounter(t.args.topography, p, t.args.breakOnDiagonal)
 		if (err != nil) != t.wantErr {
 			b.Errorf("IslandCounter() error = %v, wantErr %v", err, t.wantErr)
 			return
@@ -144,16 +130,19 @@ func runBenchmarkIslandCounterParallel(t test, b *testing.B) {
 
 func BenchmarkIslandCounter(b *testing.B) {
 	for _, t := range tests {
-		b.Run(t.name, func(bb *testing.B) {
-			runBenchmarkIslandCounter(t, bb)
-		})
-	}
-}
 
-func BenchmarkIslandCounterP(b *testing.B) {
-	for _, t := range tests {
 		b.Run(t.name, func(bb *testing.B) {
-			runBenchmarkIslandCounterParallel(t, bb)
+
+			// non-parallel
+			bb.Run("S", func(bbb *testing.B) {
+				runBenchmarkIslandCounter(t, false, bbb)
+			})
+
+			// parallel
+			bb.Run("P", func(bbb *testing.B) {
+				runBenchmarkIslandCounter(t, true, bbb)
+			})
+
 		})
 	}
 }
