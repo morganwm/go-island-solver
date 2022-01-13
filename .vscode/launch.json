@@ -15,6 +15,17 @@
             ]
         },
         {
+            "name": "Test - Amazon Rectangular",
+            "type": "go",
+            "request": "launch",
+            "mode": "test",
+            "program": "${workspaceFolder}",
+            "args": [
+                "-test.v",
+                "-test.run=^TestIslandCounter/amzn_.*$"
+            ]
+        },
+        {
             "name": "Benchmarks",
             "type": "go",
             "request": "launch",

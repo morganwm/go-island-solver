@@ -80,6 +80,21 @@ var tests = []test{
 		want:    3,
 		wantErr: false,
 	},
+	{
+		// https://medium.com/javarevisited/day-33-number-of-islands-80ecd0490fe3
+		name: "amzn (rect)",
+		args: args{
+			topography: [][]int{
+				{1, 1, 1, 1, 0},
+				{1, 1, 0, 1, 0},
+				{1, 1, 0, 0, 0},
+				{0, 0, 0, 0, 0},
+			},
+			breakOnDiagonal: true,
+		},
+		want:    1,
+		wantErr: false,
+	},
 }
 
 func runIslandCounterTest(tt test, p bool, t testing.TB) {
