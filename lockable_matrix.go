@@ -3,7 +3,8 @@ package main
 import "sync"
 
 type LockableMatrix struct {
-	size        int
+	width       int
+	height      int
 	mu          sync.RWMutex
 	visitedMap  []bool
 	visitedList []struct {
@@ -12,10 +13,11 @@ type LockableMatrix struct {
 	}
 }
 
-func NewLockableMatrix(size int) LockableMatrix {
+func NewLockableMatrix(width, height int) LockableMatrix {
 	return LockableMatrix{
-		size:       size,
-		visitedMap: make([]bool, size*size),
+		width:      width,
+		height:     height,
+		visitedMap: make([]bool, width*height),
 		visitedList: []struct {
 			Column int
 			Row    int
@@ -32,7 +34,7 @@ func (l *LockableMatrix) HasVisitedSafe(column, row int) bool {
 
 func (l *LockableMatrix) HasVisited(column, row int) bool {
 
-	cellToCheck := (row * l.size) + column
+	cellToCheck := (row * l.width) + column
 	if cellToCheck >= len(l.visitedMap) {
 		return false
 	}
@@ -57,7 +59,7 @@ func (l *LockableMatrix) Visits(column, row int) {
 		Row:    row,
 	})
 
-	cellToSet := (row * l.size) + (column)
+	cellToSet := (row * l.width) + (column)
 
 	l.visitedMap[cellToSet] = true
 }
