@@ -14,13 +14,18 @@ func IslandCounter(topography [][]int, parallel bool, breakOnDiagonal bool) (int
 
 	// assert square
 	rows := len(topography)
+	columns := 0
 	for i, row := range topography {
-		if len(row) != rows {
-			return 0, nil, fmt.Errorf("topography not square, got %d rows, and row %d had %d columns", rows, i, len(row))
+		if i == 0 {
+			columns = len(row)
+			continue
+		}
+		if len(row) != columns {
+			return 0, nil, fmt.Errorf("topography not restangular, got %d rows, and row %d had %d columns and expected %d based on previous rows", rows, i, len(row), columns)
 		}
 	}
 
-	visitedMap := NewLockableMatrix(rows)
+	visitedMap := NewLockableMatrix(columns, rows)
 
 	for rowNumber, row := range topography {
 		for columnNumber, surfaceTexture := range row {
@@ -37,9 +42,9 @@ func IslandCounter(topography [][]int, parallel bool, breakOnDiagonal bool) (int
 
 			// if land then we recursively check all neighbors
 			if parallel {
-				VisitCellAndAllConnectedNeighborsParallel(columnNumber, rowNumber, breakOnDiagonal, topography, &visitedMap)
+				VisitCellAndAllConnectedNeighborsParallel(columnNumber, rowNumber, rows, columns, breakOnDiagonal, topography, &visitedMap)
 			} else {
-				VisitCellAndAllConnectedNeighbors(columnNumber, rowNumber, breakOnDiagonal, topography, &visitedMap)
+				VisitCellAndAllConnectedNeighbors(columnNumber, rowNumber, rows, columns, breakOnDiagonal, topography, &visitedMap)
 			}
 
 			islandCounter++
@@ -49,7 +54,7 @@ func IslandCounter(topography [][]int, parallel bool, breakOnDiagonal bool) (int
 	return islandCounter, visitedMap.visitedList, nil
 }
 
-func VisitCellAndAllConnectedNeighbors(columnNumber, rowNumber int, breakOnDiagonal bool, topography [][]int, visitedMap *LockableMatrix) {
+func VisitCellAndAllConnectedNeighbors(columnNumber, rowNumber, numberOfRows, numberOfColumns int, breakOnDiagonal bool, topography [][]int, visitedMap *LockableMatrix) {
 
 	// mark it as visited
 	visitedMap.Visits(columnNumber, rowNumber)
@@ -59,7 +64,8 @@ func VisitCellAndAllConnectedNeighbors(columnNumber, rowNumber int, breakOnDiago
 		return
 	}
 
-	maxDist := len(topography) - 1
+	maxColumnNumber := numberOfColumns - 1
+	maxRowNumber := numberOfRows - 1
 
 	// check all adjoining squares
 
@@ -68,17 +74,17 @@ func VisitCellAndAllConnectedNeighbors(columnNumber, rowNumber int, breakOnDiago
 
 		// upper left
 		if !breakOnDiagonal && rowNumber-1 >= 0 && !visitedMap.HasVisited(columnNumber-1, rowNumber-1) {
-			VisitCellAndAllConnectedNeighbors(columnNumber-1, rowNumber-1, breakOnDiagonal, topography, visitedMap)
+			VisitCellAndAllConnectedNeighbors(columnNumber-1, rowNumber-1, numberOfRows, numberOfColumns, breakOnDiagonal, topography, visitedMap)
 		}
 
 		// center left
 		if !visitedMap.HasVisited(columnNumber-1, rowNumber) {
-			VisitCellAndAllConnectedNeighbors(columnNumber-1, rowNumber, breakOnDiagonal, topography, visitedMap)
+			VisitCellAndAllConnectedNeighbors(columnNumber-1, rowNumber, numberOfRows, numberOfColumns, breakOnDiagonal, topography, visitedMap)
 		}
 
 		// bottom left
-		if !breakOnDiagonal && rowNumber+1 <= maxDist && !visitedMap.HasVisited(columnNumber-1, rowNumber+1) {
-			VisitCellAndAllConnectedNeighbors(columnNumber-1, rowNumber+1, breakOnDiagonal, topography, visitedMap)
+		if !breakOnDiagonal && rowNumber+1 <= maxRowNumber && !visitedMap.HasVisited(columnNumber-1, rowNumber+1) {
+			VisitCellAndAllConnectedNeighbors(columnNumber-1, rowNumber+1, numberOfRows, numberOfColumns, breakOnDiagonal, topography, visitedMap)
 		}
 	}
 
@@ -86,35 +92,35 @@ func VisitCellAndAllConnectedNeighbors(columnNumber, rowNumber int, breakOnDiago
 
 	// above
 	if rowNumber-1 >= 0 && !visitedMap.HasVisited(columnNumber, rowNumber-1) {
-		VisitCellAndAllConnectedNeighbors(columnNumber, rowNumber-1, breakOnDiagonal, topography, visitedMap)
+		VisitCellAndAllConnectedNeighbors(columnNumber, rowNumber-1, numberOfRows, numberOfColumns, breakOnDiagonal, topography, visitedMap)
 	}
 
 	// below
-	if rowNumber+1 <= maxDist && !visitedMap.HasVisited(columnNumber, rowNumber+1) {
-		VisitCellAndAllConnectedNeighbors(columnNumber, rowNumber+1, breakOnDiagonal, topography, visitedMap)
+	if rowNumber+1 <= maxColumnNumber && !visitedMap.HasVisited(columnNumber, rowNumber+1) {
+		VisitCellAndAllConnectedNeighbors(columnNumber, rowNumber+1, numberOfRows, numberOfColumns, breakOnDiagonal, topography, visitedMap)
 	}
 
 	// column to the right
-	if (columnNumber + 1) <= maxDist {
+	if (columnNumber + 1) <= maxColumnNumber {
 
 		// upper left
 		if !breakOnDiagonal && rowNumber-1 >= 0 && !visitedMap.HasVisited(columnNumber+1, rowNumber-1) {
-			VisitCellAndAllConnectedNeighbors(columnNumber+1, rowNumber-1, breakOnDiagonal, topography, visitedMap)
+			VisitCellAndAllConnectedNeighbors(columnNumber+1, rowNumber-1, numberOfRows, numberOfColumns, breakOnDiagonal, topography, visitedMap)
 		}
 
 		// center left
 		if !visitedMap.HasVisited(columnNumber+1, rowNumber) {
-			VisitCellAndAllConnectedNeighbors(columnNumber+1, rowNumber, breakOnDiagonal, topography, visitedMap)
+			VisitCellAndAllConnectedNeighbors(columnNumber+1, rowNumber, numberOfRows, numberOfColumns, breakOnDiagonal, topography, visitedMap)
 		}
 
 		// bottom left
-		if !breakOnDiagonal && rowNumber+1 <= maxDist && !visitedMap.HasVisited(columnNumber+1, rowNumber+1) {
-			VisitCellAndAllConnectedNeighbors(columnNumber+1, rowNumber+1, breakOnDiagonal, topography, visitedMap)
+		if !breakOnDiagonal && rowNumber+1 <= maxRowNumber && !visitedMap.HasVisited(columnNumber+1, rowNumber+1) {
+			VisitCellAndAllConnectedNeighbors(columnNumber+1, rowNumber+1, numberOfRows, numberOfColumns, breakOnDiagonal, topography, visitedMap)
 		}
 	}
 }
 
-func VisitCellAndAllConnectedNeighborsParallel(columnNumber, rowNumber int, breakOnDiagonal bool, topography [][]int, visitedMap *LockableMatrix) {
+func VisitCellAndAllConnectedNeighborsParallel(columnNumber, rowNumber, numberOfRows, numberOfColumns int, breakOnDiagonal bool, topography [][]int, visitedMap *LockableMatrix) {
 
 	// mark it as visited
 	visitedMap.VisitsSafe(columnNumber, rowNumber)
@@ -124,7 +130,8 @@ func VisitCellAndAllConnectedNeighborsParallel(columnNumber, rowNumber int, brea
 		return
 	}
 
-	maxDist := len(topography) - 1
+	maxColumnNumber := numberOfColumns - 1
+	maxRowNumber := numberOfRows - 1
 
 	cellsToVisit := make(chan struct {
 		column int
@@ -144,7 +151,7 @@ func VisitCellAndAllConnectedNeighborsParallel(columnNumber, rowNumber int, brea
 					continue
 				}
 				go func() {
-					VisitCellAndAllConnectedNeighborsParallel(cell.column, cell.row, breakOnDiagonal, topography, visitedMap)
+					VisitCellAndAllConnectedNeighborsParallel(cell.column, cell.row, numberOfRows, numberOfColumns, breakOnDiagonal, topography, visitedMap)
 					wg.Done()
 				}()
 
@@ -176,7 +183,7 @@ func VisitCellAndAllConnectedNeighborsParallel(columnNumber, rowNumber int, brea
 		}{columnNumber - 1, rowNumber}
 
 		// bottom left
-		if !breakOnDiagonal && rowNumber+1 <= maxDist {
+		if !breakOnDiagonal && rowNumber+1 <= maxRowNumber {
 			wg.Add(1)
 			cellsToVisit <- struct {
 				column int
@@ -197,7 +204,7 @@ func VisitCellAndAllConnectedNeighborsParallel(columnNumber, rowNumber int, brea
 	}
 
 	// below
-	if rowNumber+1 <= maxDist {
+	if rowNumber+1 <= maxRowNumber {
 		wg.Add(1)
 		cellsToVisit <- struct {
 			column int
@@ -206,7 +213,7 @@ func VisitCellAndAllConnectedNeighborsParallel(columnNumber, rowNumber int, brea
 	}
 
 	// column to the right
-	if (columnNumber + 1) <= maxDist {
+	if (columnNumber + 1) <= maxColumnNumber {
 
 		// upper right
 		if !breakOnDiagonal && rowNumber-1 >= 0 {
@@ -225,7 +232,7 @@ func VisitCellAndAllConnectedNeighborsParallel(columnNumber, rowNumber int, brea
 		}{columnNumber + 1, rowNumber}
 
 		// bottom right
-		if !breakOnDiagonal && rowNumber+1 <= maxDist {
+		if !breakOnDiagonal && rowNumber+1 <= maxRowNumber {
 			wg.Add(1)
 			cellsToVisit <- struct {
 				column int
