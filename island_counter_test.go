@@ -96,6 +96,22 @@ var tests = []test{
 		wantErr: false,
 	},
 	{
+		// https://medium.com/javarevisited/day-33-number-of-islands-80ecd0490fe3
+		name: "amzn (rect - rot)",
+		args: args{
+			topography: [][]int{
+				{0, 1, 1, 1},
+				{0, 1, 1, 1},
+				{0, 0, 0, 1},
+				{0, 0, 1, 1},
+				{0, 0, 0, 0},
+			},
+			breakOnDiagonal: true,
+		},
+		want:    1,
+		wantErr: false,
+	},
+	{
 		name: "custom []",
 		args: args{
 			topography:      [][]int{},
@@ -163,6 +179,18 @@ var tests = []test{
 			breakOnDiagonal: false,
 		},
 		want:    2,
+		wantErr: false,
+	},
+	{
+		name: "custom all land",
+		args: args{
+			topography: [][]int{
+				{1, 1},
+				{1, 1},
+			},
+			breakOnDiagonal: false,
+		},
+		want:    1,
 		wantErr: false,
 	},
 }
