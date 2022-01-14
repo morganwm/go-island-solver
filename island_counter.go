@@ -5,6 +5,11 @@ import (
 	"sync"
 )
 
+const (
+	WATER = 0
+	LAND  = 1
+)
+
 func IslandCounter(topography [][]int, parallel bool, breakOnDiagonal bool) (int, []struct {
 	Column int
 	Row    int
@@ -35,7 +40,7 @@ func IslandCounter(topography [][]int, parallel bool, breakOnDiagonal bool) (int
 				continue
 			}
 
-			if surfaceTexture == 0 {
+			if surfaceTexture == WATER {
 				visitedMap.Visits(columnNumber, rowNumber)
 				continue
 			}
@@ -60,7 +65,7 @@ func VisitCellAndAllConnectedNeighbors(columnNumber, rowNumber, numberOfRows, nu
 	visitedMap.Visits(columnNumber, rowNumber)
 
 	// if water then skip
-	if topography[rowNumber][columnNumber] == 0 {
+	if topography[rowNumber][columnNumber] == WATER {
 		return
 	}
 
@@ -126,7 +131,7 @@ func VisitCellAndAllConnectedNeighborsParallel(columnNumber, rowNumber, numberOf
 	visitedMap.VisitsSafe(columnNumber, rowNumber)
 
 	// if water then skip
-	if topography[rowNumber][columnNumber] == 0 {
+	if topography[rowNumber][columnNumber] == WATER {
 		return
 	}
 
