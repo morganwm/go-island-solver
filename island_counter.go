@@ -101,7 +101,7 @@ func VisitCellAndAllConnectedNeighbors(columnNumber, rowNumber, numberOfRows, nu
 	}
 
 	// below
-	if rowNumber+1 <= maxColumnNumber && !visitedMap.HasVisited(columnNumber, rowNumber+1) {
+	if rowNumber+1 <= maxRowNumber && !visitedMap.HasVisited(columnNumber, rowNumber+1) {
 		VisitCellAndAllConnectedNeighbors(columnNumber, rowNumber+1, numberOfRows, numberOfColumns, breakOnDiagonal, topography, visitedMap)
 	}
 

@@ -95,6 +95,76 @@ var tests = []test{
 		want:    1,
 		wantErr: false,
 	},
+	{
+		name: "custom []",
+		args: args{
+			topography:      [][]int{},
+			breakOnDiagonal: false,
+		},
+		want:    0,
+		wantErr: false,
+	},
+	{
+		name: "custom [[]]",
+		args: args{
+			topography:      [][]int{{}},
+			breakOnDiagonal: false,
+		},
+		want:    0,
+		wantErr: false,
+	},
+	{
+		name: "custom [[0]]",
+		args: args{
+			topography:      [][]int{{0}},
+			breakOnDiagonal: false,
+		},
+		want:    0,
+		wantErr: false,
+	},
+	{
+		name: "custom [[1]]",
+		args: args{
+			topography:      [][]int{{1}},
+			breakOnDiagonal: false,
+		},
+		want:    1,
+		wantErr: false,
+	},
+	{
+		name: "custom long",
+		args: args{
+			topography:      [][]int{{0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}},
+			breakOnDiagonal: false,
+		},
+		want:    2,
+		wantErr: false,
+	},
+	{
+		name: "custom tall",
+		args: args{
+			topography: [][]int{
+				{0},
+				{0},
+				{0},
+				{1},
+				{0},
+				{0},
+				{0},
+				{0},
+				{0},
+				{0},
+				{0},
+				{0},
+				{0},
+				{0},
+				{1},
+			},
+			breakOnDiagonal: false,
+		},
+		want:    2,
+		wantErr: false,
+	},
 }
 
 func runIslandCounterTest(tt test, p bool, t testing.TB) {
