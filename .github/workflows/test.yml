@@ -24,7 +24,9 @@ jobs:
       run: go build -v
 
     - name: Test
-      run: go test -race -v | go2xunit > test_output.xml
+      run: |
+        go test -race -v | go2xunit > test_output.xml
+        ls -la
 
     - name: Report Test Results
       uses: dorny/test-reporter@v1
