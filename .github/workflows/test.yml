@@ -31,5 +31,5 @@ jobs:
       with:
         artifact: test-results
         name: Go Test
-        path: report.xml
+        path: "*.xml"
         reporter: java-junit
