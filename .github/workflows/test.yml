@@ -29,11 +29,6 @@ jobs:
     - name: Report Test Results
       uses: dorny/test-reporter@v1
       with:
-        # artifact: report.xml
-        name: Go Test
+        name: Test Results
         path: "*.xml"
         reporter: java-junit
-
-    - name: sanity check
-      if: success() || failure()
-      run: ls -la
