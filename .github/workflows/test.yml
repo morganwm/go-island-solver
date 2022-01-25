@@ -27,12 +27,12 @@ jobs:
       run: go test -race -v | go2xunit > test_output.xml
 
     - name: List
-      run: ls -la
+      run: cat ./test_output.xml
 
     - name: Report Test Results
       uses: dorny/test-reporter@v1
       with:
         artifact: test-results
         name: Go Test
-        path: 'test_output.xml'
+        path: test_output.xml
         reporter: dotnet-trx
