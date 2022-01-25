@@ -49,7 +49,14 @@ func main() {
 	}
 
 	started := time.Now()
-	islands, routetaken, err := IslandCounter(topo, *parallelFlag, *breakOnDiagonal)
+	islands, routetaken, err := IslandCounter(topo,
+		IslandCounterOptions{
+			BreakOnDiagonal: *breakOnDiagonal,
+		},
+		IslandCounterSettings{
+			Parallel: *parallelFlag,
+		},
+	)
 	timeTaken := time.Since(started)
 	if err != nil {
 		log.Fatalf("[ERROR] could not count islands: %v", err)

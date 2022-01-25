@@ -17,9 +17,18 @@ jobs:
       uses: actions/setup-go@v2
       with:
         go-version: 1.17
+      run: go install github.com/tebeka/go2xunit
 
     - name: Build
       run: go build -v
 
     - name: Test
-      run: go test -race -v
+      run: go test -race -v | go2xunit > test_output.xml
+
+    - name: Report Test Results
+      uses: dorny/test-reporter@v1
+      with:
+        artifact: test-results
+        name: Go Test
+        path: 'test_output.xml'
+        reporter: dotnet-trx
