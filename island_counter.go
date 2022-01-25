@@ -10,7 +10,15 @@ const (
 	LAND  = 1
 )
 
-func IslandCounter(topography [][]int, parallel bool, breakOnDiagonal bool) (int, []struct {
+type IslandCounterSettings struct {
+	Parallel bool
+}
+
+type IslandCounterOptions struct {
+	BreakOnDiagonal bool
+}
+
+func IslandCounter(topography [][]int, options IslandCounterOptions, settings IslandCounterSettings) (int, []struct {
 	Column int
 	Row    int
 }, error) {
@@ -46,10 +54,10 @@ func IslandCounter(topography [][]int, parallel bool, breakOnDiagonal bool) (int
 			}
 
 			// if land then we recursively check all neighbors
-			if parallel {
-				VisitCellAndAllConnectedNeighborsParallel(columnNumber, rowNumber, rows, columns, breakOnDiagonal, topography, &visitedMap)
+			if settings.Parallel {
+				VisitCellAndAllConnectedNeighborsParallel(columnNumber, rowNumber, rows, columns, options.BreakOnDiagonal, topography, &visitedMap)
 			} else {
-				VisitCellAndAllConnectedNeighbors(columnNumber, rowNumber, rows, columns, breakOnDiagonal, topography, &visitedMap)
+				VisitCellAndAllConnectedNeighbors(columnNumber, rowNumber, rows, columns, options.BreakOnDiagonal, topography, &visitedMap)
 			}
 
 			islandCounter++

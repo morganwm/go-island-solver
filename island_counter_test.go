@@ -5,8 +5,8 @@ import (
 )
 
 type args struct {
-	topography      [][]int
-	breakOnDiagonal bool
+	topography [][]int
+	options    IslandCounterOptions
 }
 
 type test struct {
@@ -25,8 +25,8 @@ var testEdgeCases = []test{
 	{
 		name: "[]",
 		args: args{
-			topography:      [][]int{},
-			breakOnDiagonal: false,
+			topography: [][]int{},
+			options:    IslandCounterOptions{BreakOnDiagonal: false},
 		},
 		want:    0,
 		wantErr: false,
@@ -34,8 +34,8 @@ var testEdgeCases = []test{
 	{
 		name: "[[]]",
 		args: args{
-			topography:      [][]int{{}},
-			breakOnDiagonal: false,
+			topography: [][]int{{}},
+			options:    IslandCounterOptions{BreakOnDiagonal: false},
 		},
 		want:    0,
 		wantErr: false,
@@ -43,8 +43,8 @@ var testEdgeCases = []test{
 	{
 		name: "[[0]]",
 		args: args{
-			topography:      [][]int{{0}},
-			breakOnDiagonal: false,
+			topography: [][]int{{0}},
+			options:    IslandCounterOptions{BreakOnDiagonal: false},
 		},
 		want:    0,
 		wantErr: false,
@@ -52,8 +52,8 @@ var testEdgeCases = []test{
 	{
 		name: "[[1]]",
 		args: args{
-			topography:      [][]int{{1}},
-			breakOnDiagonal: false,
+			topography: [][]int{{1}},
+			options:    IslandCounterOptions{BreakOnDiagonal: false},
 		},
 		want:    1,
 		wantErr: false,
@@ -61,8 +61,8 @@ var testEdgeCases = []test{
 	{
 		name: "long",
 		args: args{
-			topography:      [][]int{{0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}},
-			breakOnDiagonal: false,
+			topography: [][]int{{0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}},
+			options:    IslandCounterOptions{BreakOnDiagonal: false},
 		},
 		want:    2,
 		wantErr: false,
@@ -87,7 +87,7 @@ var testEdgeCases = []test{
 				{0},
 				{1},
 			},
-			breakOnDiagonal: false,
+			options: IslandCounterOptions{BreakOnDiagonal: false},
 		},
 		want:    2,
 		wantErr: false,
@@ -99,7 +99,7 @@ var testEdgeCases = []test{
 				{1, 1},
 				{1, 1},
 			},
-			breakOnDiagonal: false,
+			options: IslandCounterOptions{BreakOnDiagonal: false},
 		},
 		want:    1,
 		wantErr: false,
@@ -117,7 +117,7 @@ var testCasesFunctional = []test{
 				{0, 0, 0, 0, 0},
 				{1, 0, 1, 0, 1},
 			},
-			breakOnDiagonal: false,
+			options: IslandCounterOptions{BreakOnDiagonal: false},
 		},
 		want:    5,
 		wantErr: false,
@@ -133,7 +133,7 @@ var testCasesFunctional = []test{
 				{0, 1, 1, 0, 0},
 				{1, 0, 1, 0, 1},
 			},
-			breakOnDiagonal: true,
+			options: IslandCounterOptions{BreakOnDiagonal: true},
 		},
 		want:    6,
 		wantErr: false,
@@ -149,7 +149,7 @@ var testCasesFunctional = []test{
 				{0, 1, 1, 0, 0},
 				{1, 0, 1, 0, 1},
 			},
-			breakOnDiagonal: false,
+			options: IslandCounterOptions{BreakOnDiagonal: false},
 		},
 		want:    2,
 		wantErr: false,
@@ -165,7 +165,7 @@ var testCasesFunctional = []test{
 				{1, 1, 0, 0, 1},
 				{1, 1, 0, 0, 1},
 			},
-			breakOnDiagonal: false,
+			options: IslandCounterOptions{BreakOnDiagonal: false},
 		},
 		want:    3,
 		wantErr: false,
@@ -180,7 +180,7 @@ var testCasesFunctional = []test{
 				{1, 1, 0, 0, 0},
 				{0, 0, 0, 0, 0},
 			},
-			breakOnDiagonal: true,
+			options: IslandCounterOptions{BreakOnDiagonal: true},
 		},
 		want:    1,
 		wantErr: false,
@@ -196,11 +196,16 @@ var testCasesFunctional = []test{
 				{0, 0, 1, 1},
 				{0, 0, 0, 0},
 			},
-			breakOnDiagonal: true,
+			options: IslandCounterOptions{BreakOnDiagonal: true},
 		},
 		want:    1,
 		wantErr: false,
 	},
+}
+
+var settingVarients = map[string]IslandCounterSettings{
+	"series":   {Parallel: false},
+	"parallel": {Parallel: true},
 }
 
 var testSuites = map[string][]test{
@@ -208,8 +213,8 @@ var testSuites = map[string][]test{
 	"functional": testCasesFunctional,
 }
 
-func runIslandCounterTest(tt test, p bool, t testing.TB) {
-	got, _, err := IslandCounter(tt.args.topography, p, tt.args.breakOnDiagonal)
+func runIslandCounterTest(tt test, s IslandCounterSettings, t testing.TB) {
+	got, _, err := IslandCounter(tt.args.topography, tt.args.options, s)
 	if (err != nil) != tt.wantErr {
 		t.Errorf("IslandCounter() error = %v, wantErr %v", err, tt.wantErr)
 		return
@@ -219,9 +224,9 @@ func runIslandCounterTest(tt test, p bool, t testing.TB) {
 	}
 }
 
-func runBenchmarkIslandCounter(t test, p bool, b *testing.B) {
+func runBenchmarkIslandCounter(t test, s IslandCounterSettings, b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		runIslandCounterTest(t, p, b)
+		runIslandCounterTest(t, s, b)
 	}
 }
 
@@ -229,21 +234,19 @@ func TestIslandCounter(t *testing.T) {
 
 	for suite, tests := range testSuites {
 		t.Run(suite, func(tSuite *testing.T) {
+
 			for _, testcase := range tests {
 				tSuite.Run(testcase.name, func(tCase *testing.T) {
 
-					// non-parallel
-					tCase.Run("S", func(tVarient *testing.T) {
-						runIslandCounterTest(testcase, false, tVarient)
-					})
-
-					// parallel
-					tCase.Run("P", func(tVarient *testing.T) {
-						runIslandCounterTest(testcase, true, tVarient)
-					})
+					for varient, setting := range settingVarients {
+						tCase.Run(varient, func(tVarient *testing.T) {
+							runIslandCounterTest(testcase, setting, tVarient)
+						})
+					}
 
 				})
 			}
+
 		})
 	}
 
@@ -253,21 +256,19 @@ func BenchmarkIslandCounter(b *testing.B) {
 
 	for suite, tests := range testSuites {
 		b.Run(suite, func(bSuite *testing.B) {
+
 			for _, testcase := range tests {
 				bSuite.Run(testcase.name, func(bCase *testing.B) {
 
-					// non-parallel
-					bCase.Run("S", func(bVarient *testing.B) {
-						runBenchmarkIslandCounter(testcase, false, bVarient)
-					})
-
-					// parallel
-					bCase.Run("P", func(bVarient *testing.B) {
-						runBenchmarkIslandCounter(testcase, true, bVarient)
-					})
+					for varient, settings := range settingVarients {
+						bCase.Run(varient, func(bVarient *testing.B) {
+							runBenchmarkIslandCounter(testcase, settings, bVarient)
+						})
+					}
 
 				})
 			}
+
 		})
 	}
 
