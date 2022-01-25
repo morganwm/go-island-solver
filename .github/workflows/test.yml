@@ -33,3 +33,7 @@ jobs:
         name: Go Test
         path: "*.xml"
         reporter: java-junit
+
+    - name: sanity check
+      if: success() || failure()
+      run: ls -la
