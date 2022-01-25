@@ -29,7 +29,7 @@ jobs:
     - name: Report Test Results
       uses: dorny/test-reporter@v1
       with:
-        artifact: report.xml
+        # artifact: report.xml
         name: Go Test
         path: "*.xml"
         reporter: java-junit
