@@ -26,9 +26,6 @@ jobs:
     - name: Test
       run: go test -race -v 2>&1 | go-junit-report > report.xml
 
-    - name: List
-      run: cat ./test_output.xml
-
     - name: Report Test Results
       uses: dorny/test-reporter@v1
       with:
