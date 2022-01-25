@@ -16,7 +16,97 @@ type test struct {
 	wantErr bool
 }
 
-var tests = []test{
+type testSuite struct {
+	name  string
+	cases []test
+}
+
+var testEdgeCases = []test{
+	{
+		name: "[]",
+		args: args{
+			topography:      [][]int{},
+			breakOnDiagonal: false,
+		},
+		want:    0,
+		wantErr: false,
+	},
+	{
+		name: "[[]]",
+		args: args{
+			topography:      [][]int{{}},
+			breakOnDiagonal: false,
+		},
+		want:    0,
+		wantErr: false,
+	},
+	{
+		name: "[[0]]",
+		args: args{
+			topography:      [][]int{{0}},
+			breakOnDiagonal: false,
+		},
+		want:    0,
+		wantErr: false,
+	},
+	{
+		name: "[[1]]",
+		args: args{
+			topography:      [][]int{{1}},
+			breakOnDiagonal: false,
+		},
+		want:    1,
+		wantErr: false,
+	},
+	{
+		name: "long",
+		args: args{
+			topography:      [][]int{{0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}},
+			breakOnDiagonal: false,
+		},
+		want:    2,
+		wantErr: false,
+	},
+	{
+		name: "tall",
+		args: args{
+			topography: [][]int{
+				{0},
+				{0},
+				{0},
+				{1},
+				{0},
+				{0},
+				{0},
+				{0},
+				{0},
+				{0},
+				{0},
+				{0},
+				{0},
+				{0},
+				{1},
+			},
+			breakOnDiagonal: false,
+		},
+		want:    2,
+		wantErr: false,
+	},
+	{
+		name: "all land",
+		args: args{
+			topography: [][]int{
+				{1, 1},
+				{1, 1},
+			},
+			breakOnDiagonal: false,
+		},
+		want:    1,
+		wantErr: false,
+	},
+}
+
+var testCasesFunctional = []test{
 	{
 		name: "Matts Test",
 		args: args{
@@ -111,88 +201,11 @@ var tests = []test{
 		want:    1,
 		wantErr: false,
 	},
-	{
-		name: "custom []",
-		args: args{
-			topography:      [][]int{},
-			breakOnDiagonal: false,
-		},
-		want:    0,
-		wantErr: false,
-	},
-	{
-		name: "custom [[]]",
-		args: args{
-			topography:      [][]int{{}},
-			breakOnDiagonal: false,
-		},
-		want:    0,
-		wantErr: false,
-	},
-	{
-		name: "custom [[0]]",
-		args: args{
-			topography:      [][]int{{0}},
-			breakOnDiagonal: false,
-		},
-		want:    0,
-		wantErr: false,
-	},
-	{
-		name: "custom [[1]]",
-		args: args{
-			topography:      [][]int{{1}},
-			breakOnDiagonal: false,
-		},
-		want:    1,
-		wantErr: false,
-	},
-	{
-		name: "custom long",
-		args: args{
-			topography:      [][]int{{0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}},
-			breakOnDiagonal: false,
-		},
-		want:    2,
-		wantErr: false,
-	},
-	{
-		name: "custom tall",
-		args: args{
-			topography: [][]int{
-				{0},
-				{0},
-				{0},
-				{1},
-				{0},
-				{0},
-				{0},
-				{0},
-				{0},
-				{0},
-				{0},
-				{0},
-				{0},
-				{0},
-				{1},
-			},
-			breakOnDiagonal: false,
-		},
-		want:    2,
-		wantErr: false,
-	},
-	{
-		name: "custom all land",
-		args: args{
-			topography: [][]int{
-				{1, 1},
-				{1, 1},
-			},
-			breakOnDiagonal: false,
-		},
-		want:    1,
-		wantErr: false,
-	},
+}
+
+var testSuites = map[string][]test{
+	"edge":       testEdgeCases,
+	"functional": testCasesFunctional,
 }
 
 func runIslandCounterTest(tt test, p bool, t testing.TB) {
@@ -214,39 +227,48 @@ func runBenchmarkIslandCounter(t test, p bool, b *testing.B) {
 
 func TestIslandCounter(t *testing.T) {
 
-	for _, testcase := range tests {
-		t.Run(testcase.name, func(tt *testing.T) {
+	for suite, tests := range testSuites {
+		t.Run(suite, func(tSuite *testing.T) {
+			for _, testcase := range tests {
+				tSuite.Run(testcase.name, func(tCase *testing.T) {
 
-			// non-parallel
-			tt.Run("S", func(ttt *testing.T) {
-				runIslandCounterTest(testcase, false, ttt)
-			})
+					// non-parallel
+					tCase.Run("S", func(tVarient *testing.T) {
+						runIslandCounterTest(testcase, false, tVarient)
+					})
 
-			// parallel
-			tt.Run("P", func(ttt *testing.T) {
-				runIslandCounterTest(testcase, true, ttt)
-			})
+					// parallel
+					tCase.Run("P", func(tVarient *testing.T) {
+						runIslandCounterTest(testcase, true, tVarient)
+					})
 
+				})
+			}
 		})
-
 	}
+
 }
 
 func BenchmarkIslandCounter(b *testing.B) {
-	for _, testcase := range tests {
 
-		b.Run(testcase.name, func(bb *testing.B) {
+	for suite, tests := range testSuites {
+		b.Run(suite, func(bSuite *testing.B) {
+			for _, testcase := range tests {
+				bSuite.Run(testcase.name, func(bCase *testing.B) {
 
-			// non-parallel
-			bb.Run("S", func(bbb *testing.B) {
-				runBenchmarkIslandCounter(testcase, false, bbb)
-			})
+					// non-parallel
+					bCase.Run("S", func(bVarient *testing.B) {
+						runBenchmarkIslandCounter(testcase, false, bVarient)
+					})
 
-			// parallel
-			bb.Run("P", func(bbb *testing.B) {
-				runBenchmarkIslandCounter(testcase, true, bbb)
-			})
+					// parallel
+					bCase.Run("P", func(bVarient *testing.B) {
+						runBenchmarkIslandCounter(testcase, true, bVarient)
+					})
 
+				})
+			}
 		})
 	}
+
 }
