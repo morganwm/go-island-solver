@@ -18,13 +18,13 @@ jobs:
       with:
         go-version: 1.17
 
-    - run: go get github.com/tebeka/go2xunit
+    - run: go get github.com/jstemmer/go-junit-report
 
     - name: Build
       run: go build -v
 
     - name: Test
-      run: go test -race -v | go2xunit > test_output.xml
+      run: go test -race -v 2>&1 | go-junit-report > report.xml
 
     - name: List
       run: cat ./test_output.xml
@@ -34,5 +34,5 @@ jobs:
       with:
         artifact: test-results
         name: Go Test
-        path: test_output.xml
-        reporter: dotnet-trx
+        path: report.xml
+        reporter: java-junit
