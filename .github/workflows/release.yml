@@ -6,6 +6,11 @@ jobs:
   release:
     name: Upload Release Asset
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [linux, darwin, windows]
+        arch: [amd64, arm64]
     steps:
       - name: Install Go
         uses: actions/setup-go@v3
@@ -31,12 +36,7 @@ jobs:
               tar -cvzf "go-island-solver-$VERSION-$GOOS-$GOARCH.tar.gz" -C "$DIR" go-island-solver
             fi
           }
-          CGO_ENABLED=0 GOOS=linux GOARCH=amd64 build_solver
-          CGO_ENABLED=0 GOOS=linux GOARCH=arm GOARM=6 build_solver
-          CGO_ENABLED=0 GOOS=linux GOARCH=arm64 build_solver
-          CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 build_solver
-          CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 build_solver
-          CGO_ENABLED=0 GOOS=windows GOARCH=amd64 build_solver
+          CGO_ENABLED=0 GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} build_solver
       - name: Upload release artifacts
         uses: actions/github-script@v6
         with:
