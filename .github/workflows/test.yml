@@ -24,7 +24,7 @@ jobs:
       run: go build -v
 
     - name: Test
-      run: go test -race -v 2>&1 | go-junit-report > report.xml
+      run: go test ./... -race -v 2>&1 | go-junit-report > report.xml
 
     - name: Report Test Results
       uses: dorny/test-reporter@v1
