@@ -45,7 +45,7 @@ jobs:
             const fs = require("fs").promises;
             const { repo: { owner, repo }, sha } = context;
 
-            const release = await github.repo.getReleaseByTag({
+            const release = await github.rest.repo.getReleaseByTag({
               owner, repo,
               tag: process.env.GITHUB_REF.replace("refs/tags/", ""),
             });
@@ -54,7 +54,7 @@ jobs:
             for (let file of await fs.readdir(".")) {
               if (!file.startsWith("go-island-solver-")) continue;
               console.log("Uploading", file);
-              await github.repos.uploadReleaseAsset({
+              await github.rest.repo.uploadReleaseAsset({
                 owner, repo,
                 release_id: release.data.id,
                 name: file,
