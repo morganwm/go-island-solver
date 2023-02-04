@@ -9,6 +9,7 @@ import (
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/morganwm/go-island-solver/core"
 )
 
 var topo = [][]int{
@@ -49,11 +50,11 @@ func main() {
 	}
 
 	started := time.Now()
-	islands, routetaken, err := IslandCounter(topo,
-		IslandCounterOptions{
+	islands, routetaken, err := core.IslandCounter(topo,
+		core.IslandCounterOptions{
 			BreakOnDiagonal: *breakOnDiagonal,
 		},
-		IslandCounterSettings{
+		core.IslandCounterSettings{
 			Parallel: *parallelFlag,
 		},
 	)

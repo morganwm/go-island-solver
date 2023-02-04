@@ -1,4 +1,4 @@
-package main
+package core
 
 import (
 	"fmt"
@@ -25,7 +25,7 @@ func IslandCounter(topography [][]int, options IslandCounterOptions, settings Is
 
 	islandCounter := 0
 
-	// assert square
+	// assert rectangle
 	rows := len(topography)
 	columns := 0
 	for i, row := range topography {
