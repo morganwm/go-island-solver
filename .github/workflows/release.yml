@@ -45,7 +45,7 @@ jobs:
             const fs = require("fs").promises;
             const { repo: { owner, repo }, sha } = context;
 
-            const release = await github.repos.getReleaseByTag({
+            const release = await github.repo.getReleaseByTag({
               owner, repo,
               tag: process.env.GITHUB_REF.replace("refs/tags/", ""),
             });
