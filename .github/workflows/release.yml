@@ -38,7 +38,7 @@ jobs:
           CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 build_solver
           CGO_ENABLED=0 GOOS=windows GOARCH=amd64 build_solver
       - name: Upload release artifacts
-        uses: actions/github-script@v3
+        uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
