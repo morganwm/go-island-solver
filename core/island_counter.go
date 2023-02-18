@@ -34,7 +34,7 @@ func IslandCounter(topography [][]int, options IslandCounterOptions, settings Is
 			continue
 		}
 		if len(row) != columns {
-			return 0, nil, fmt.Errorf("topography not restangular, got %d rows, and row %d had %d columns and expected %d based on previous rows", rows, i, len(row), columns)
+			return 0, nil, fmt.Errorf("topography not rectangular, got %d rows, and row %d had %d columns and expected %d based on previous rows", rows, i, len(row), columns)
 		}
 	}
 

@@ -203,7 +203,7 @@ var testCasesFunctional = []test{
 	},
 }
 
-var settingVarients = map[string]IslandCounterSettings{
+var settingVariants = map[string]IslandCounterSettings{
 	"series":   {Parallel: false},
 	"parallel": {Parallel: true},
 }
@@ -238,9 +238,9 @@ func TestIslandCounter(t *testing.T) {
 			for _, testcase := range tests {
 				tSuite.Run(testcase.name, func(tCase *testing.T) {
 
-					for varient, setting := range settingVarients {
-						tCase.Run(varient, func(tVarient *testing.T) {
-							runIslandCounterTest(testcase, setting, tVarient)
+					for variant, setting := range settingVariants {
+						tCase.Run(variant, func(tVariant *testing.T) {
+							runIslandCounterTest(testcase, setting, tVariant)
 						})
 					}
 
@@ -260,9 +260,9 @@ func BenchmarkIslandCounter(b *testing.B) {
 			for _, testcase := range tests {
 				bSuite.Run(testcase.name, func(bCase *testing.B) {
 
-					for varient, settings := range settingVarients {
-						bCase.Run(varient, func(bVarient *testing.B) {
-							runBenchmarkIslandCounter(testcase, settings, bVarient)
+					for variant, settings := range settingVariants {
+						bCase.Run(variant, func(bVariant *testing.B) {
+							runBenchmarkIslandCounter(testcase, settings, bVariant)
 						})
 					}
 
