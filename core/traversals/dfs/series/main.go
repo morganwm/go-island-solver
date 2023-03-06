@@ -9,6 +9,7 @@ var Traversers utils.ComposableMap[typedefs.IslandTraverser]
 
 func init() {
 	Traversers.SetDefault(VisitCellAndAllConnectedNeighborsLoop)
+
 	Traversers.Set("loop", VisitCellAndAllConnectedNeighborsLoop)
 	Traversers.Set("ifs", VisitCellAndAllConnectedNeighborsIfs)
 }

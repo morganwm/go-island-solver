@@ -11,6 +11,7 @@ var Traversers utils.ComposableMap[typedefs.IslandTraverser]
 
 func init() {
 	Traversers.SetDefault(series.Traversers.GetDefault())
+
 	Traversers.Add("series", series.Traversers)
 	Traversers.Add("parallel", parallel.Traversers)
 }
