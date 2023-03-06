@@ -32,10 +32,16 @@ func main() {
 		basicOutPut     = flag.Bool("basic-output", false, "if set the UI will only display out the output of the run and not the UI animation, best for use with non-tty shells")
 		modeFlag        = flag.String("mode", "dfs", fmt.Sprintf("the mode to run the program in: %v", traversals.Traversers.GetKeys()))
 		breakOnDiagonal = flag.Bool("break-on-diagonal", false, "if the flag is set the program will run as if diagonal landmasses are not contiguous")
-		versionFlag     = flag.Bool("version", false, "")
+		versionFlag     = flag.Bool("version", false, "show the version information")
+		helpFlag        = flag.Bool("help", false, "shows this message")
 	)
 
 	flag.Parse()
+
+	if *helpFlag {
+		flag.Usage()
+		return
+	}
 
 	if *versionFlag {
 		if Version != "" {
