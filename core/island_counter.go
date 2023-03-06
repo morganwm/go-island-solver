@@ -81,54 +81,49 @@ func VisitCellAndAllConnectedNeighbors(columnNumber, rowNumber, numberOfRows, nu
 	maxRowNumber := numberOfRows - 1
 
 	// check all adjoining squares
+	for rowOffset := -1; rowOffset <= 1; rowOffset++ {
+		rowTarget := rowNumber + rowOffset
 
-	// column to the left
-	if (columnNumber - 1) >= 0 {
-
-		// upper left
-		if !breakOnDiagonal && rowNumber-1 >= 0 && !visitedMap.HasVisited(columnNumber-1, rowNumber-1) {
-			VisitCellAndAllConnectedNeighbors(columnNumber-1, rowNumber-1, numberOfRows, numberOfColumns, breakOnDiagonal, topography, visitedMap)
+		// row is out of bounds
+		if rowTarget > maxRowNumber ||
+			rowTarget < 0 {
+			continue
 		}
 
-		// center left
-		if !visitedMap.HasVisited(columnNumber-1, rowNumber) {
-			VisitCellAndAllConnectedNeighbors(columnNumber-1, rowNumber, numberOfRows, numberOfColumns, breakOnDiagonal, topography, visitedMap)
-		}
+		for columnOffset := -1; columnOffset <= 1; columnOffset++ {
+			columnTarget := columnNumber + columnOffset
 
-		// bottom left
-		if !breakOnDiagonal && rowNumber+1 <= maxRowNumber && !visitedMap.HasVisited(columnNumber-1, rowNumber+1) {
-			VisitCellAndAllConnectedNeighbors(columnNumber-1, rowNumber+1, numberOfRows, numberOfColumns, breakOnDiagonal, topography, visitedMap)
-		}
-	}
+			// row is out of bounds
+			if columnTarget > maxColumnNumber ||
+				columnTarget < 0 {
+				continue
+			}
 
-	// same column
+			// is the same spot
+			if rowOffset == 0 && columnOffset == 0 {
+				continue
+			}
 
-	// above
-	if rowNumber-1 >= 0 && !visitedMap.HasVisited(columnNumber, rowNumber-1) {
-		VisitCellAndAllConnectedNeighbors(columnNumber, rowNumber-1, numberOfRows, numberOfColumns, breakOnDiagonal, topography, visitedMap)
-	}
+			// is diagonal
+			if breakOnDiagonal &&
+				(rowOffset*columnOffset != 0) {
+				continue
+			}
 
-	// below
-	if rowNumber+1 <= maxRowNumber && !visitedMap.HasVisited(columnNumber, rowNumber+1) {
-		VisitCellAndAllConnectedNeighbors(columnNumber, rowNumber+1, numberOfRows, numberOfColumns, breakOnDiagonal, topography, visitedMap)
-	}
+			// has already been visited
+			if visitedMap.HasVisited(columnTarget, rowTarget) {
+				continue
+			}
 
-	// column to the right
-	if (columnNumber + 1) <= maxColumnNumber {
-
-		// upper left
-		if !breakOnDiagonal && rowNumber-1 >= 0 && !visitedMap.HasVisited(columnNumber+1, rowNumber-1) {
-			VisitCellAndAllConnectedNeighbors(columnNumber+1, rowNumber-1, numberOfRows, numberOfColumns, breakOnDiagonal, topography, visitedMap)
-		}
-
-		// center left
-		if !visitedMap.HasVisited(columnNumber+1, rowNumber) {
-			VisitCellAndAllConnectedNeighbors(columnNumber+1, rowNumber, numberOfRows, numberOfColumns, breakOnDiagonal, topography, visitedMap)
-		}
-
-		// bottom left
-		if !breakOnDiagonal && rowNumber+1 <= maxRowNumber && !visitedMap.HasVisited(columnNumber+1, rowNumber+1) {
-			VisitCellAndAllConnectedNeighbors(columnNumber+1, rowNumber+1, numberOfRows, numberOfColumns, breakOnDiagonal, topography, visitedMap)
+			VisitCellAndAllConnectedNeighbors(
+				columnTarget,
+				rowTarget,
+				numberOfRows,
+				numberOfColumns,
+				breakOnDiagonal,
+				topography,
+				visitedMap,
+			)
 		}
 	}
 }
