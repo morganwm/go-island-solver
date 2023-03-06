@@ -21,12 +21,12 @@ func IslandCounter(topography [][]int, options IslandCounterOptions, settings Is
 	Row    int
 }, error) {
 
-	traverser, ok := traversals.Traversers[settings.Mode]
+	traverser, ok := traversals.Traversers.GetExact(settings.Mode)
 	if !ok {
 		return 0, nil,
 			fmt.Errorf(
 				"unknown mode selected: %s, available modes: %v",
-				settings.Mode, traversals.GetAllowedTraversers(),
+				settings.Mode, traversals.Traversers.GetKeys(),
 			)
 	}
 
