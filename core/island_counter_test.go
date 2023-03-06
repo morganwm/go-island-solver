@@ -2,6 +2,8 @@ package core
 
 import (
 	"testing"
+
+	"github.com/morganwm/go-island-solver/constants"
 )
 
 type args struct {
@@ -204,8 +206,9 @@ var testCasesFunctional = []test{
 }
 
 var settingVariants = map[string]IslandCounterSettings{
-	"series":   {Parallel: false},
-	"parallel": {Parallel: true},
+	"series_ifs":  {Mode: constants.SERIES_IFS},
+	"series_loop": {Mode: constants.SERIES_LOOP},
+	"parallel":    {Mode: constants.PARALLEL},
 }
 
 var testSuites = map[string][]test{

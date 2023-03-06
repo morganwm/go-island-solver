@@ -1,4 +1,4 @@
-package core
+package utils
 
 import "sync"
 
@@ -6,8 +6,8 @@ type LockableMatrix struct {
 	width       int
 	height      int
 	mu          sync.RWMutex
-	visitedMap  []bool
-	visitedList []struct {
+	VisitedMap  []bool
+	VisitedList []struct {
 		Column int
 		Row    int
 	}
@@ -17,8 +17,8 @@ func NewLockableMatrix(width, height int) LockableMatrix {
 	return LockableMatrix{
 		width:      width,
 		height:     height,
-		visitedMap: make([]bool, width*height),
-		visitedList: []struct {
+		VisitedMap: make([]bool, width*height),
+		VisitedList: []struct {
 			Column int
 			Row    int
 		}{},
@@ -35,11 +35,11 @@ func (l *LockableMatrix) HasVisitedSafe(column, row int) bool {
 func (l *LockableMatrix) HasVisited(column, row int) bool {
 
 	cellToCheck := (row * l.width) + column
-	if cellToCheck >= len(l.visitedMap) {
+	if cellToCheck >= len(l.VisitedMap) {
 		return false
 	}
 
-	return l.visitedMap[cellToCheck]
+	return l.VisitedMap[cellToCheck]
 }
 
 func (l *LockableMatrix) VisitsSafe(column, row int) {
@@ -51,7 +51,7 @@ func (l *LockableMatrix) VisitsSafe(column, row int) {
 
 func (l *LockableMatrix) Visits(column, row int) {
 
-	l.visitedList = append(l.visitedList, struct {
+	l.VisitedList = append(l.VisitedList, struct {
 		Column int
 		Row    int
 	}{
@@ -61,5 +61,5 @@ func (l *LockableMatrix) Visits(column, row int) {
 
 	cellToSet := (row * l.width) + (column)
 
-	l.visitedMap[cellToSet] = true
+	l.VisitedMap[cellToSet] = true
 }
