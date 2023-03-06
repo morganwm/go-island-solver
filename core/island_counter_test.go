@@ -205,15 +205,19 @@ var testCasesFunctional = []test{
 	},
 }
 
-var settingVariants = map[string]IslandCounterSettings{
-	"series_ifs":  {Mode: constants.SERIES_IFS},
-	"series_loop": {Mode: constants.SERIES_LOOP},
-	"parallel":    {Mode: constants.PARALLEL},
-}
+var settingVariants = GetSettingVariants()
 
 var testSuites = map[string][]test{
 	"edge":       testEdgeCases,
 	"functional": testCasesFunctional,
+}
+
+func GetSettingVariants() map[string]IslandCounterSettings {
+	return map[string]IslandCounterSettings{
+		"series_ifs":  {Mode: constants.SERIES_IFS},
+		"series_loop": {Mode: constants.SERIES_LOOP},
+		"parallel":    {Mode: constants.PARALLEL},
+	}
 }
 
 func runIslandCounterTest(tt test, s IslandCounterSettings, t testing.TB) {

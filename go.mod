@@ -1,6 +1,6 @@
 module github.com/morganwm/go-island-solver
 
-go 1.18
+go 1.20
 
 require github.com/charmbracelet/bubbletea v0.20.0
 
