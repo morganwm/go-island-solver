@@ -75,5 +75,13 @@
             "program": "${workspaceFolder}",
             "args": ["-version"]
         },
+        {
+            "name": "Help",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}",
+            "args": ["-help"]
+        },
     ]
 }

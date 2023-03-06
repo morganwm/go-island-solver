@@ -1,4 +1,4 @@
-package traversals
+package series
 
 import (
 	"github.com/morganwm/go-island-solver/constants"
