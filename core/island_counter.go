@@ -30,21 +30,9 @@ func IslandCounter(topography [][]int, options IslandCounterOptions, settings Is
 			)
 	}
 
-	// assert rectangle
-	rows := len(topography)
-	columns := 0
-	for i, row := range topography {
-		if i == 0 {
-			columns = len(row)
-			continue
-		}
-		if len(row) != columns {
-			return 0, nil,
-				fmt.Errorf(
-					"topography not rectangular, got %d rows, and row %d had %d columns and expected %d based on previous rows",
-					rows, i, len(row), columns,
-				)
-		}
+	rows, columns, err := RectangleDimensions(topography)
+	if err != nil {
+		return 0, nil, err
 	}
 
 	islandCounter := 0
