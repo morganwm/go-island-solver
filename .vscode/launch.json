@@ -65,7 +65,7 @@
             "request": "launch",
             "mode": "auto",
             "program": "${workspaceFolder}",
-            "args": ["-basic-output", "-parallel"]
+            "args": ["-basic-output", "-mode=parallel"]
         },
         {
             "name": "Version",
