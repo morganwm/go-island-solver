@@ -41,6 +41,7 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
+            "console": "integratedTerminal",
             "program": "${workspaceFolder}",
         },
         {
@@ -48,8 +49,9 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
+            "console": "integratedTerminal",
             "program": "${workspaceFolder}",
-            "args": ["-parallel"],
+            "args": ["-mode=dfs/parallel"],
         },
         {
             "name": "Run",
@@ -65,7 +67,7 @@
             "request": "launch",
             "mode": "auto",
             "program": "${workspaceFolder}",
-            "args": ["-basic-output", "-mode=parallel"]
+            "args": ["-basic-output", "-mode=dfs/parallel"]
         },
         {
             "name": "Version",

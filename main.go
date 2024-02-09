@@ -94,7 +94,7 @@ func main() {
 		routetaken:     routetaken,
 		step:           0,
 	})
-	if err := p.Start(); err != nil {
+	if _, err := p.Run(); err != nil {
 		log.Printf("Alas, there's been an error: %v", err)
 		os.Exit(1)
 	}
