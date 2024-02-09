@@ -13,11 +13,11 @@ jobs:
         arch: [amd64, arm64]
     steps:
       - name: Install Go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v5
         with:
           go-version: 1.x
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Build binaries
         run: |
           VERSION="$(git describe --tags)"
@@ -38,7 +38,7 @@ jobs:
           }
           CGO_ENABLED=0 GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} build_solver
       - name: Upload release artifacts
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
