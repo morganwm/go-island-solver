@@ -29,6 +29,9 @@ var (
 	helpFlag        = flag.Bool("help", false, "shows this message")
 	speedFlag       = flag.Int("speed", 1000, "the number of seconds per refresh when using the fancy UI")
 
+	/*
+		DEFAULT_TOPO is the value used when to topography is provided to the island solver
+	*/
 	DEFAULT_TOPO = [][]int{
 		{1, 1, 0, 0, 0},
 		{0, 1, 0, 0, 1},
