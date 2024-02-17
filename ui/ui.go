@@ -1,9 +1,11 @@
 package ui
 
 import (
+	"fmt"
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/morganwm/go-island-solver/constants"
 )
 
 var _ tea.Model = (*IslandSolverModel)(nil)
@@ -35,6 +37,7 @@ func (m *IslandSolverModel) Init() tea.Cmd {
 // Update implements tea.Model.
 func (m *IslandSolverModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg.(type) {
+
 	case tea.KeyMsg:
 		return m, tea.Quit
 
@@ -48,17 +51,25 @@ func (m *IslandSolverModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		// is not 0 then set the previous step location equal to something else
 		if m.Step != 0 {
 			previousStepLocation := m.Routetaken[m.Step-1]
-			valueToSet := "#"
-			if m.Topography[previousStepLocation.Row][previousStepLocation.Column] == 0 {
-				valueToSet = "_"
+
+			switch m.Topography[previousStepLocation.Row][previousStepLocation.Column] {
+
+			case constants.WATER:
+				m.DisplayableMap[previousStepLocation.Row][previousStepLocation.Column] = "_"
+
+			case constants.LAND:
+				m.DisplayableMap[previousStepLocation.Row][previousStepLocation.Column] = "#"
 			}
-			m.DisplayableMap[previousStepLocation.Row][previousStepLocation.Column] = valueToSet
 		}
 
 		if m.Step < len(m.Routetaken) {
 			// set current step location to 'X'
 			currentlyStepLocation := m.Routetaken[m.Step]
-			m.DisplayableMap[currentlyStepLocation.Row][currentlyStepLocation.Column] = "X"
+			// m.DisplayableMap[currentlyStepLocation.Row][currentlyStepLocation.Column] = "X"
+			m.DisplayableMap[currentlyStepLocation.Row][currentlyStepLocation.Column] = fmt.Sprintf(
+				"[%d]",
+				m.Topography[currentlyStepLocation.Row][currentlyStepLocation.Column],
+			)
 		}
 
 		return m, tickCmd(m.Speed)
