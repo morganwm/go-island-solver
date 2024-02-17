@@ -29,7 +29,7 @@ var (
 	helpFlag        = flag.Bool("help", false, "shows this message")
 	speedFlag       = flag.Int("speed", 1000, "the number of seconds per refresh when using the fancy UI")
 
-	topo = [][]int{
+	DEFAULT_TOPO = [][]int{
 		{1, 1, 0, 0, 0},
 		{0, 1, 0, 0, 1},
 		{1, 0, 0, 1, 1},
@@ -39,6 +39,8 @@ var (
 )
 
 func main() {
+
+	topo := DEFAULT_TOPO
 
 	flag.Parse()
 
