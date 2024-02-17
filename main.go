@@ -83,23 +83,10 @@ func main() {
 		return
 	}
 
-	// display our fancy UI
-	displayMap := make([][]string, len(topo))
-	for i := range displayMap {
-		var row []string
-		for _, surfaceTexture := range topo[i] {
-			row = append(row, fmt.Sprintf("%d", surfaceTexture))
-		}
-
-		displayMap[i] = row
-	}
-
 	p := tea.NewProgram(&ui.IslandSolverModel{
-		Speed:          time.Millisecond * time.Duration(*speedFlag),
-		DisplayableMap: displayMap,
-		Topography:     topo,
-		Routetaken:     routetaken,
-		Step:           0,
+		Speed:      time.Millisecond * time.Duration(*speedFlag),
+		Topography: topo,
+		Routetaken: routetaken,
 	})
 	if _, err := p.Run(); err != nil {
 		log.Printf("Alas, there's been an error: %v", err)

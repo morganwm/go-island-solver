@@ -20,17 +20,33 @@ func tickCmd(duration time.Duration) tea.Cmd {
 // Model is the application's internal state. It holds the current step and the route taken
 type IslandSolverModel struct {
 	Speed          time.Duration
-	DisplayableMap [][]string
+	displayableMap [][]string
 	Topography     [][]int
 	Routetaken     []struct {
 		Column int
 		Row    int
 	}
-	Step int
+	step int
 }
 
 // Init implements tea.Model.
 func (m *IslandSolverModel) Init() tea.Cmd {
+
+	// initialize step to the beginning
+	m.step = 0
+
+	// convert topo to a map we can display
+	m.displayableMap = make([][]string, len(m.Topography))
+	for i := range m.displayableMap {
+		var row []string
+		for _, surfaceTexture := range m.Topography[i] {
+			row = append(row, fmt.Sprintf("%d", surfaceTexture))
+		}
+
+		m.displayableMap[i] = row
+	}
+
+	// kick off the call back event
 	return tickCmd(m.Speed)
 }
 
@@ -42,31 +58,31 @@ func (m *IslandSolverModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, tea.Quit
 
 	case time.Time:
-		if m.Step == len(m.Routetaken) {
+		if m.step == len(m.Routetaken) {
 			return m, tea.Quit
 		}
 
-		m.Step++
+		m.step++
 
 		// is not 0 then set the previous step location equal to something else
-		if m.Step != 0 {
-			previousStepLocation := m.Routetaken[m.Step-1]
+		if m.step != 0 {
+			previousStepLocation := m.Routetaken[m.step-1]
 
 			switch m.Topography[previousStepLocation.Row][previousStepLocation.Column] {
 
 			case constants.WATER:
-				m.DisplayableMap[previousStepLocation.Row][previousStepLocation.Column] = "_"
+				m.displayableMap[previousStepLocation.Row][previousStepLocation.Column] = "_"
 
 			case constants.LAND:
-				m.DisplayableMap[previousStepLocation.Row][previousStepLocation.Column] = "#"
+				m.displayableMap[previousStepLocation.Row][previousStepLocation.Column] = "#"
 			}
 		}
 
-		if m.Step < len(m.Routetaken) {
+		if m.step < len(m.Routetaken) {
 			// set current step location to 'X'
-			currentlyStepLocation := m.Routetaken[m.Step]
+			currentlyStepLocation := m.Routetaken[m.step]
 			// m.DisplayableMap[currentlyStepLocation.Row][currentlyStepLocation.Column] = "X"
-			m.DisplayableMap[currentlyStepLocation.Row][currentlyStepLocation.Column] = fmt.Sprintf(
+			m.displayableMap[currentlyStepLocation.Row][currentlyStepLocation.Column] = fmt.Sprintf(
 				"[%d]",
 				m.Topography[currentlyStepLocation.Row][currentlyStepLocation.Column],
 			)
@@ -83,7 +99,7 @@ func (m *IslandSolverModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m *IslandSolverModel) View() string {
 	viewString := "\n"
 
-	for _, row := range m.DisplayableMap {
+	for _, row := range m.displayableMap {
 		for _, surfaceTexture := range row {
 			viewString += "\t"
 			viewString += surfaceTexture
