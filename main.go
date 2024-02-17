@@ -14,29 +14,31 @@ import (
 	"github.com/morganwm/go-island-solver/ui"
 )
 
-var topo = [][]int{
-	{1, 1, 0, 0, 0},
-	{0, 1, 0, 0, 1},
-	{1, 0, 0, 1, 1},
-	{0, 0, 0, 0, 0},
-	{1, 0, 1, 0, 1},
-}
+var (
+	/*
+		Version can be set at link time to override debug.BuildInfo.Main.Version,
+		which is "(devel)" when building from within the module. See
+		golang.org/issue/29814 and golang.org/issue/29228.
+	*/
+	Version string
 
-// Version can be set at link time to override debug.BuildInfo.Main.Version,
-// which is "(devel)" when building from within the module. See
-// golang.org/issue/29814 and golang.org/issue/29228.
-var Version string
+	basicOutPut     = flag.Bool("basic-output", false, "if set the UI will only display out the output of the run and not the UI animation, best for use with non-tty shells")
+	modeFlag        = flag.String("mode", "dfs", fmt.Sprintf("the mode to run the program in: %v", traversals.Traversers.GetKeys()))
+	breakOnDiagonal = flag.Bool("break-on-diagonal", false, "if the flag is set the program will run as if diagonal landmasses are not contiguous")
+	versionFlag     = flag.Bool("version", false, "show the version information")
+	helpFlag        = flag.Bool("help", false, "shows this message")
+	speedFlag       = flag.Int("speed", 1000, "the number of seconds per refresh when using the fancy UI")
+
+	topo = [][]int{
+		{1, 1, 0, 0, 0},
+		{0, 1, 0, 0, 1},
+		{1, 0, 0, 1, 1},
+		{0, 0, 0, 0, 0},
+		{1, 0, 1, 0, 1},
+	}
+)
 
 func main() {
-
-	var (
-		basicOutPut     = flag.Bool("basic-output", false, "if set the UI will only display out the output of the run and not the UI animation, best for use with non-tty shells")
-		modeFlag        = flag.String("mode", "dfs", fmt.Sprintf("the mode to run the program in: %v", traversals.Traversers.GetKeys()))
-		breakOnDiagonal = flag.Bool("break-on-diagonal", false, "if the flag is set the program will run as if diagonal landmasses are not contiguous")
-		versionFlag     = flag.Bool("version", false, "show the version information")
-		helpFlag        = flag.Bool("help", false, "shows this message")
-		speedFlag       = flag.Int("speed", 1000, "the number of seconds per refresh when using the fancy UI")
-	)
 
 	flag.Parse()
 
