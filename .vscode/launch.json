@@ -43,6 +43,7 @@
             "mode": "auto",
             "console": "integratedTerminal",
             "program": "${workspaceFolder}",
+            "args": ["-speed=500"],
         },
         {
             "name": "Run Parallel With UI",
@@ -51,7 +52,10 @@
             "mode": "auto",
             "console": "integratedTerminal",
             "program": "${workspaceFolder}",
-            "args": ["-mode=dfs/parallel"],
+            "args": [
+                "-speed=500",
+                "-mode=dfs/parallel",
+            ],
         },
         {
             "name": "Run",

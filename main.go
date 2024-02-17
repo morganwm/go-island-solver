@@ -11,6 +11,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/morganwm/go-island-solver/core"
 	"github.com/morganwm/go-island-solver/core/traversals"
+	"github.com/morganwm/go-island-solver/ui"
 )
 
 var topo = [][]int{
@@ -34,6 +35,7 @@ func main() {
 		breakOnDiagonal = flag.Bool("break-on-diagonal", false, "if the flag is set the program will run as if diagonal landmasses are not contiguous")
 		versionFlag     = flag.Bool("version", false, "show the version information")
 		helpFlag        = flag.Bool("help", false, "shows this message")
+		speedFlag       = flag.Int("speed", 1000, "the number of seconds per refresh when using the fancy UI")
 	)
 
 	flag.Parse()
@@ -54,6 +56,10 @@ func main() {
 		}
 		fmt.Println("(unknown)")
 		return
+	}
+
+	if *speedFlag < 1 {
+		fmt.Printf("invalid speed: %d, must be greater than 1", *speedFlag)
 	}
 
 	started := time.Now()
@@ -88,87 +94,16 @@ func main() {
 		displayMap[i] = row
 	}
 
-	p := tea.NewProgram(model{
-		displayableMap: displayMap,
-		topography:     topo,
-		routetaken:     routetaken,
-		step:           0,
+	p := tea.NewProgram(&ui.IslandSolverModel{
+		Speed:          time.Millisecond * time.Duration(*speedFlag),
+		DisplayableMap: displayMap,
+		Topography:     topo,
+		Routetaken:     routetaken,
+		Step:           0,
 	})
 	if _, err := p.Run(); err != nil {
 		log.Printf("Alas, there's been an error: %v", err)
 		os.Exit(1)
 	}
 
-}
-
-type tickMsg time.Time
-
-type model struct {
-	displayableMap [][]string
-	topography     [][]int
-	routetaken     []struct {
-		Column int
-		Row    int
-	}
-	step int
-}
-
-func (m model) Init() tea.Cmd {
-	return tickCmd()
-}
-
-func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	switch msg.(type) {
-	case tea.KeyMsg:
-		return m, tea.Quit
-
-	case tickMsg:
-		if m.step == len(m.routetaken) {
-			return m, tea.Quit
-		}
-
-		m.step++
-
-		// is not 0 then set the previous step location equal to something else
-		if m.step != 0 {
-			previousStepLocation := m.routetaken[m.step-1]
-			valueToSet := "#"
-			if topo[previousStepLocation.Row][previousStepLocation.Column] == 0 {
-				valueToSet = "_"
-			}
-			m.displayableMap[previousStepLocation.Row][previousStepLocation.Column] = valueToSet
-		}
-
-		if m.step < len(m.routetaken) {
-			// set current step location to 'X'
-			currentlyStepLocation := m.routetaken[m.step]
-			m.displayableMap[currentlyStepLocation.Row][currentlyStepLocation.Column] = "X"
-		}
-
-		return m, tickCmd()
-
-	default:
-		return m, nil
-	}
-}
-
-func (m model) View() string {
-
-	viewString := "\n"
-
-	for _, row := range m.displayableMap {
-		for _, surfaceTexture := range row {
-			viewString += "\t"
-			viewString += surfaceTexture
-		}
-		viewString += "\n"
-	}
-
-	return viewString
-}
-
-func tickCmd() tea.Cmd {
-	return tea.Tick(time.Second*1, func(t time.Time) tea.Msg {
-		return tickMsg(t)
-	})
 }
