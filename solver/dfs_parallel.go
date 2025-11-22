@@ -1,24 +1,22 @@
-package parallel
+package solver
 
 import (
 	"sync"
-
-	"github.com/morganwm/go-island-solver/constants"
-	"github.com/morganwm/go-island-solver/utils"
 )
 
+// VisitCellAndAllConnectedNeighborsParallel recursively visits all connected land cells using goroutines.
 func VisitCellAndAllConnectedNeighborsParallel(
 	columnNumber, rowNumber, numberOfRows, numberOfColumns int,
 	breakOnDiagonal bool,
 	topography [][]int,
-	visitedMap *utils.LockableMatrix,
+	visitedMap *LockableMatrix,
 ) {
 
 	// mark it as visited
 	visitedMap.VisitsSafe(columnNumber, rowNumber)
 
-	// if water then skip
-	if topography[rowNumber][columnNumber] == constants.WATER {
+	// if water (0) then skip
+	if topography[rowNumber][columnNumber] == 0 {
 		return
 	}
 
@@ -135,5 +133,4 @@ func VisitCellAndAllConnectedNeighborsParallel(
 
 	wg.Wait()
 	done <- true
-
 }

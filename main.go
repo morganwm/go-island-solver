@@ -9,8 +9,7 @@ import (
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/morganwm/go-island-solver/core"
-	"github.com/morganwm/go-island-solver/core/traversals"
+	"github.com/morganwm/go-island-solver/solver"
 	"github.com/morganwm/go-island-solver/ui"
 )
 
@@ -23,7 +22,7 @@ var (
 	Version string
 
 	basicOutPut     = flag.Bool("basic-output", false, "if set the UI will only display out the output of the run and not the UI animation, best for use with non-tty shells")
-	modeFlag        = flag.String("mode", "dfs", fmt.Sprintf("the mode to run the program in: %v", traversals.Traversers.GetKeys()))
+	parallel        = flag.Bool("parallel", false, "run in parallel mode (slower for small maps due to overhead)")
 	breakOnDiagonal = flag.Bool("break-on-diagonal", false, "if the flag is set the program will run as if diagonal landmasses are not contiguous")
 	versionFlag     = flag.Bool("version", false, "show the version information")
 	helpFlag        = flag.Bool("help", false, "shows this message")
@@ -70,14 +69,7 @@ func main() {
 	}
 
 	started := time.Now()
-	islands, routetaken, err := core.IslandCounter(topo,
-		core.IslandCounterOptions{
-			BreakOnDiagonal: *breakOnDiagonal,
-		},
-		core.IslandCounterSettings{
-			Mode: *modeFlag,
-		},
-	)
+	islands, routetaken, err := solver.IslandCounter(topo, *breakOnDiagonal, *parallel)
 	timeTaken := time.Since(started)
 	if err != nil {
 		log.Fatalf("[ERROR] could not count islands: %v", err)
