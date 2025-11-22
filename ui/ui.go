@@ -5,7 +5,6 @@ import (
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/morganwm/go-island-solver/constants"
 )
 
 var _ tea.Model = (*IslandSolverModel)(nil)
@@ -70,10 +69,10 @@ func (m *IslandSolverModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 			switch m.Topography[previousStepLocation.Row][previousStepLocation.Column] {
 
-			case constants.WATER:
+			case 0: // WATER
 				m.displayableMap[previousStepLocation.Row][previousStepLocation.Column] = "_"
 
-			case constants.LAND:
+			case 1: // LAND
 				m.displayableMap[previousStepLocation.Row][previousStepLocation.Column] = "#"
 			}
 		}

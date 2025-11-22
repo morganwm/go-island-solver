@@ -1,39 +1,30 @@
-package series
+package solver
 
-import (
-	"github.com/morganwm/go-island-solver/constants"
-	"github.com/morganwm/go-island-solver/utils"
-)
-
+// VisitCellAndAllConnectedNeighborsLoop recursively visits all connected land cells using a loop.
 func VisitCellAndAllConnectedNeighborsLoop(
 	columnNumber, rowNumber, numberOfRows, numberOfColumns int,
 	breakOnDiagonal bool,
 	topography [][]int,
-	visitedMap *utils.LockableMatrix,
+	visitedMap *LockableMatrix,
 ) {
 
 	// mark it as visited
 	visitedMap.Visits(columnNumber, rowNumber)
 
-	// if water then skip
-	if topography[rowNumber][columnNumber] == constants.WATER {
+	// if water (0) then skip
+	if topography[rowNumber][columnNumber] == 0 {
 		return
 	}
 
 	maxColumnNumber := numberOfColumns - 1
 	maxRowNumber := numberOfRows - 1
 
-	/*
-		check all adjoining squares,
-		believe it or not: this is slower than simply a bunch of if statements
-		(~200ns per full run of the solver)
-	*/
+	// check all adjoining squares
 	for rowOffset := -1; rowOffset <= 1; rowOffset++ {
 		rowTarget := rowNumber + rowOffset
 
 		// row is out of bounds
-		if rowTarget > maxRowNumber ||
-			rowTarget < 0 {
+		if rowTarget > maxRowNumber || rowTarget < 0 {
 			continue
 		}
 
@@ -41,8 +32,7 @@ func VisitCellAndAllConnectedNeighborsLoop(
 			columnTarget := columnNumber + columnOffset
 
 			// column is out of bounds
-			if columnTarget > maxColumnNumber ||
-				columnTarget < 0 {
+			if columnTarget > maxColumnNumber || columnTarget < 0 {
 				continue
 			}
 
@@ -52,8 +42,7 @@ func VisitCellAndAllConnectedNeighborsLoop(
 			}
 
 			// is diagonal
-			if breakOnDiagonal &&
-				(rowOffset*columnOffset != 0) {
+			if breakOnDiagonal && (rowOffset*columnOffset != 0) {
 				continue
 			}
 

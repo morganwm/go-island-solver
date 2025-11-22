@@ -1,14 +1,12 @@
-package core
+package solver
 
 import (
 	"testing"
-
-	"github.com/morganwm/go-island-solver/core/traversals"
 )
 
 type args struct {
-	topography [][]int
-	options    IslandCounterOptions
+	topography      [][]int
+	breakOnDiagonal bool
 }
 
 type test struct {
@@ -18,17 +16,12 @@ type test struct {
 	wantErr bool
 }
 
-type testSuite struct {
-	name  string
-	cases []test
-}
-
 var testEdgeCases = []test{
 	{
 		name: "[]",
 		args: args{
-			topography: [][]int{},
-			options:    IslandCounterOptions{BreakOnDiagonal: false},
+			topography:      [][]int{},
+			breakOnDiagonal: false,
 		},
 		want:    0,
 		wantErr: false,
@@ -36,8 +29,8 @@ var testEdgeCases = []test{
 	{
 		name: "[[]]",
 		args: args{
-			topography: [][]int{{}},
-			options:    IslandCounterOptions{BreakOnDiagonal: false},
+			topography:      [][]int{{}},
+			breakOnDiagonal: false,
 		},
 		want:    0,
 		wantErr: false,
@@ -45,8 +38,8 @@ var testEdgeCases = []test{
 	{
 		name: "[[0]]",
 		args: args{
-			topography: [][]int{{0}},
-			options:    IslandCounterOptions{BreakOnDiagonal: false},
+			topography:      [][]int{{0}},
+			breakOnDiagonal: false,
 		},
 		want:    0,
 		wantErr: false,
@@ -54,8 +47,8 @@ var testEdgeCases = []test{
 	{
 		name: "[[1]]",
 		args: args{
-			topography: [][]int{{1}},
-			options:    IslandCounterOptions{BreakOnDiagonal: false},
+			topography:      [][]int{{1}},
+			breakOnDiagonal: false,
 		},
 		want:    1,
 		wantErr: false,
@@ -63,8 +56,8 @@ var testEdgeCases = []test{
 	{
 		name: "long",
 		args: args{
-			topography: [][]int{{0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}},
-			options:    IslandCounterOptions{BreakOnDiagonal: false},
+			topography:      [][]int{{0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}},
+			breakOnDiagonal: false,
 		},
 		want:    2,
 		wantErr: false,
@@ -89,7 +82,7 @@ var testEdgeCases = []test{
 				{0},
 				{1},
 			},
-			options: IslandCounterOptions{BreakOnDiagonal: false},
+			breakOnDiagonal: false,
 		},
 		want:    2,
 		wantErr: false,
@@ -101,7 +94,7 @@ var testEdgeCases = []test{
 				{1, 1},
 				{1, 1},
 			},
-			options: IslandCounterOptions{BreakOnDiagonal: false},
+			breakOnDiagonal: false,
 		},
 		want:    1,
 		wantErr: false,
@@ -119,7 +112,7 @@ var testCasesFunctional = []test{
 				{0, 0, 0, 0, 0},
 				{1, 0, 1, 0, 1},
 			},
-			options: IslandCounterOptions{BreakOnDiagonal: false},
+			breakOnDiagonal: false,
 		},
 		want:    5,
 		wantErr: false,
@@ -135,7 +128,7 @@ var testCasesFunctional = []test{
 				{0, 1, 1, 0, 0},
 				{1, 0, 1, 0, 1},
 			},
-			options: IslandCounterOptions{BreakOnDiagonal: true},
+			breakOnDiagonal: true,
 		},
 		want:    6,
 		wantErr: false,
@@ -151,7 +144,7 @@ var testCasesFunctional = []test{
 				{0, 1, 1, 0, 0},
 				{1, 0, 1, 0, 1},
 			},
-			options: IslandCounterOptions{BreakOnDiagonal: false},
+			breakOnDiagonal: false,
 		},
 		want:    2,
 		wantErr: false,
@@ -167,7 +160,7 @@ var testCasesFunctional = []test{
 				{1, 1, 0, 0, 1},
 				{1, 1, 0, 0, 1},
 			},
-			options: IslandCounterOptions{BreakOnDiagonal: false},
+			breakOnDiagonal: false,
 		},
 		want:    3,
 		wantErr: false,
@@ -182,7 +175,7 @@ var testCasesFunctional = []test{
 				{1, 1, 0, 0, 0},
 				{0, 0, 0, 0, 0},
 			},
-			options: IslandCounterOptions{BreakOnDiagonal: true},
+			breakOnDiagonal: true,
 		},
 		want:    1,
 		wantErr: false,
@@ -198,46 +191,26 @@ var testCasesFunctional = []test{
 				{0, 0, 1, 1},
 				{0, 0, 0, 0},
 			},
-			options: IslandCounterOptions{BreakOnDiagonal: true},
+			breakOnDiagonal: true,
 		},
 		want:    1,
 		wantErr: false,
 	},
 }
 
-var settingVariants = GetSettingVariants()
-
 var testSuites = map[string][]test{
 	"edge":       testEdgeCases,
 	"functional": testCasesFunctional,
 }
 
-func GetSettingVariants() map[string]IslandCounterSettings {
-
-	modes := make(map[string]IslandCounterSettings)
-	for _, mode := range traversals.Traversers.GetKeys() {
-		modes[mode] = IslandCounterSettings{
-			Mode: mode,
-		}
-	}
-
-	return modes
-}
-
-func runIslandCounterTest(tt test, s IslandCounterSettings, t testing.TB) {
-	got, _, err := IslandCounter(tt.args.topography, tt.args.options, s)
+func runIslandCounterTest(tt test, parallel bool, t testing.TB) {
+	got, _, err := IslandCounter(tt.args.topography, tt.args.breakOnDiagonal, parallel)
 	if (err != nil) != tt.wantErr {
 		t.Errorf("IslandCounter() error = %v, wantErr %v", err, tt.wantErr)
 		return
 	}
 	if got != tt.want {
 		t.Errorf("IslandCounter() got = %v, want %v", got, tt.want)
-	}
-}
-
-func runBenchmarkIslandCounter(t test, s IslandCounterSettings, b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		runIslandCounterTest(t, s, b)
 	}
 }
 
@@ -249,11 +222,13 @@ func TestIslandCounter(t *testing.T) {
 			for _, testcase := range tests {
 				tSuite.Run(testcase.name, func(tCase *testing.T) {
 
-					for variant, setting := range settingVariants {
-						tCase.Run(variant, func(tVariant *testing.T) {
-							runIslandCounterTest(testcase, setting, tVariant)
-						})
-					}
+					tCase.Run("Serial", func(tSub *testing.T) {
+						runIslandCounterTest(testcase, false, tSub)
+					})
+
+					tCase.Run("Parallel", func(tSub *testing.T) {
+						runIslandCounterTest(testcase, true, tSub)
+					})
 
 				})
 			}
@@ -261,6 +236,12 @@ func TestIslandCounter(t *testing.T) {
 		})
 	}
 
+}
+
+func runBenchmarkIslandCounter(t test, parallel bool, b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		runIslandCounterTest(t, parallel, b)
+	}
 }
 
 func BenchmarkIslandCounter(b *testing.B) {
@@ -271,11 +252,13 @@ func BenchmarkIslandCounter(b *testing.B) {
 			for _, testcase := range tests {
 				bSuite.Run(testcase.name, func(bCase *testing.B) {
 
-					for variant, settings := range settingVariants {
-						bCase.Run(variant, func(bVariant *testing.B) {
-							runBenchmarkIslandCounter(testcase, settings, bVariant)
-						})
-					}
+					bCase.Run("Serial", func(bSub *testing.B) {
+						runBenchmarkIslandCounter(testcase, false, bSub)
+					})
+
+					bCase.Run("Parallel", func(bSub *testing.B) {
+						runBenchmarkIslandCounter(testcase, true, bSub)
+					})
 
 				})
 			}
